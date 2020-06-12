@@ -1,0 +1,110 @@
+body {
+  background: #f5f5f5;
+}
+body ul li {
+  margin: 0;
+  padding: 0;
+}
+body .ml40 {
+  margin-left: 40px;
+}
+body .mr40 {
+  margin-right: 40px;
+}
+body .parti-content {
+  width: 98.6%;
+}
+body .parti-content .richtext-title {
+  font-size: 16px;
+}
+body .parti-content .parti-topnav {
+  background: #fff;
+}
+body .parti-content .invite-head {
+  height: 80px;
+  line-height: 12px;
+}
+body .parti-content .invite-head .verson {
+  width: 70px;
+  text-align: center;
+  margin-top: 17px;
+  cursor: pointer;
+}
+body .parti-content .invite-head .verson .invittext {
+  width: 30px;
+  height: 30px;
+}
+body .parti-content .invite-content {
+  height: 87vh;
+}
+body .parti-content .invite-content .phone-mw {
+  top: 53px;
+  height: 664px;
+  padding: 0px;
+  width: 315px !important;
+  margin: 0 auto;
+  border-radius: 37px;
+  margin-left: 55px;
+}
+body .parti-content .invite-content .phone-sel {
+  width: 15vw;
+  height: 768px;
+}
+body .parti-content .invite-content .phone-sel .page-manage {
+  height: 40px;
+  line-height: 40px;
+  background: #e0e1e2;
+  text-align: center;
+}
+body .parti-content .invite-content .phone-sel .phone-sel-scroll {
+  width: 90px;
+  margin: 0 auto;
+}
+body .parti-content .invite-content .phone-sel .phone-sel-scroll .addpageBtn {
+  width: 40px;
+  height: 40px;
+}
+body .parti-content .invite-content .content-middle {
+  background: #fafbfc;
+  width: 55vw;
+  height: 768px;
+}
+body .parti-content .invite-content .content-middle .bangs {
+  position: absolute;
+  top: 53px;
+  left: 122px;
+  width: 174px;
+  z-index: 1;
+}
+body .parti-content .invite-content .bg-image {
+  border: 1px solid #ddd;
+  height: 10vh;
+  border-radius: 10px;
+  padding: 20px;
+}
+body .parti-content .invite-content .bg-image .show-inp-box {
+  width: 100%;
+}
+body .parti-content .invite-content .bg-image .show-inp-box .text-area {
+  display: inline-block;
+  width: 100px;
+  height: 100px;
+  border: #0d3d88 1px solid;
+}
+body .parti-content .invite-content .bg-image .show-inp-box .inp-control {
+  width: 90%;
+  overflow: auto;
+}
+body .parti-content .invite-content .bg-image .scan {
+  width: 145px;
+  text-align: center;
+}
+body .parti-content .invite-content .option {
+  width: 60%;
+  height: 30px;
+  color: #999;
+}
+body .parti-content .invite-content .invite-progress {
+  height: 35px;
+  line-height: 35px;
+}

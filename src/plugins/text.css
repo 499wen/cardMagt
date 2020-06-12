@@ -1,0 +1,378 @@
+/* 修改前
+    131行css：
+    border: 2px dashed #0b4488;
+    top:0px;
+     */
+.invite-text-box{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.invite-text-box-text{
+    margin: 5px;
+    width: 100%;
+    height: 100%;
+    word-wrap: break-word;
+    position: relative;
+    z-index: 1;
+}
+.invite-text-box-border{
+    position: absolute;
+    width: calc( 100% + 2px);
+    height: calc( 100% + 2px);
+    top: -4px;
+    left: -4px;
+    z-index: 0;
+}
+.invite-text-box-border-container{
+    position: relative;
+    width: 100%;
+    height:100%;
+}
+
+.invite-text-box-border.top-line{
+    width: calc(100% - 4px); 
+    height: 0;
+    /* background-color: #0b4488; */
+    border: 1px dashed #0b4488;
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    cursor:move;
+    z-index: 99;
+}
+.invite-text-box-border.up-point{
+    z-index: 9999;
+}
+
+.invite-text-box-border.left-line{
+    width: 0;
+    height: 100%;
+    /* background-color: #0b4488; */
+    border: 1px dashed #0b4488;
+    position: absolute;
+    top:4px;
+    left:4px;
+    cursor: move;
+    z-index: 99;
+}
+
+/*.invite-text-box-border.left-line-point{*/
+/*    display: block;*/
+/*    width: 5px;*/
+/*    height: 5px;*/
+/*    border-radius: 50%;*/
+/*    background-color: #0b4488;*/
+/*    position: absolute;*/
+/*    top:50%;*/
+/*    left: -5px;*/
+/*    cursor: w-resize;*/
+/*    z-index: 999;*/
+/*}*/
+
+.invite-text-box-border.right-line{
+    width: 0;
+    height: 100%;
+    /* background-color: #0b4488; */
+    border: 1px dashed #0b4488;
+    position: absolute;
+    top:3px;
+    left:100.5%;
+    cursor: move;
+    z-index: 99;
+}
+
+.invite-text-box-border.bottom-line{
+    width: calc(100% - 4px);
+    height: 0;
+    /* background-color: #0b4488; */
+    border: 1px dashed #0b4488;
+    position: absolute;
+    top:calc(100% + 2px);
+    left: 4px;
+    cursor: move;
+    z-index: 99;
+}
+
+.invite-text-box-border.line-point{
+    display: block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: #0b4488;
+    position: absolute;
+    top: calc(50% - 3px);
+    left: calc(50% - 3px);
+    cursor: w-resize;
+    z-index: 999;
+}
+
+.invite-text-box-border.line-point.s-resize{
+    cursor: s-resize;
+}
+
+
+/*.invite-text-box-border.bottom-line-point{*/
+/*    display: block;*/
+/*    width: 5px;*/
+/*    height: 5px;*/
+/*    border-radius: 50%;*/
+/*    background-color: #0b4488;*/
+/*    position: absolute;*/
+/*    bottom:-5px;*/
+/*    left: 50%;*/
+/*    cursor: s-resize;*/
+/*    z-index: 999;*/
+/*}*/
+
+.invite-text-box-border.left-top-point{
+    display: block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: #0b4488;
+    position: absolute;
+    top: 3px;
+    left: 2px;
+    cursor: se-resize;
+}
+
+.invite-text-box-border.right-top-point{
+    display: block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: #0b4488;
+    position: absolute;
+    top: 2px;
+    left: calc(100%);
+    cursor: ne-resize;
+}
+
+.invite-text-box-border.left-bottom-point{
+    display: block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: #0b4488;
+    position: absolute;
+    top: calc(100% + 1px);
+    left: 2px;
+    cursor: ne-resize;
+}
+
+.invite-text-box-border.right-bottom-point{
+    display: block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: #0b4488;
+    position: absolute;
+    top: calc(100%);
+    left: calc(100%);
+    cursor: se-resize;
+}
+
+.btn-upload{
+    position: absolute;
+    background-color: whitesmoke;
+    width: 17px;
+    height: 17px;
+    z-index: 99999999;
+    left: 100%;
+}
+
+.imageTemplate {
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}
+.formTemplate{
+    width: 90%;
+    height: 50%;
+    position: relative;
+    margin: auto;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+ul li {
+    padding: 0;
+    margin: 0;
+}
+
+.phone-sel {
+    margin-top: 0;
+}
+
+.layui-layer-btn {
+    text-align: center;
+}
+
+.el-color-picker--mini {
+    margin-top: 4px;
+}
+
+.layui-layer {
+    border-radius: 10px;
+}
+
+.layui-layer-title {
+    text-align: center;
+    padding: 0 !important;
+    background: #5381c6 !important;
+    color: #fff !important;
+    font-size: 18px !important;
+    border-radius: 10px 10px 0 0 !important;
+}
+
+.layui-layer-btn0 {
+    background: #5381c6 !important;
+    margin-bottom: 20px !important;
+    line-height: 25px !important;
+    border-radius: 2px;
+}
+
+.btn-warning {
+    background: #5381c6 !important;
+    margin-bottom: 20px !important;
+    line-height: 25px !important;
+    border: none;
+    height: 30px;
+    width: 100px;
+    border-radius: 6px;
+    color: #fff !important;
+    cursor: pointer;
+}
+
+.show-inp-box {
+    width: 88% !important;
+}
+
+.invite-labelstyle {
+    display: inline-block;
+}
+
+/* .table-list{
+    padding: 10px 20px;
+} */
+.gray-bg {
+    background: #fafbfc;
+    height: 40px;
+    padding: 0 20px;
+}
+
+.white-bg {
+    height: 40px;
+    padding: 0 20px;
+}
+
+.el-switch.is-checked .el-switch__core {
+    border-color: #5381c6 !important;
+    background-color: #5381c6 !important;
+}
+
+.two-text {
+    display: inline-block;
+    width: 69px;
+    margin-left: 1px;
+}
+
+.three-text {
+    display: inline-block;
+    width: 73px;
+    margin-left: 1px;
+}
+
+.inp-style {
+    width: 60%;
+    border: none;
+    padding: 3px 10px;
+    opacity: 0.4;
+    border-radius: 2px;
+}
+
+.inp-style1 {
+    width: 40%;
+    border: none;
+    padding: 3px 10px;
+    opacity: 0.4;
+    border-radius: 2px;
+}
+
+.dain-code {
+    width: 90px;
+    height: 23px;
+    border: none;
+    font-size: 13px;
+    background: #f0ad4e;
+    color: #fff;
+    border-radius: 2px;
+}
+
+.invite-submission {
+    width: 60px;
+    height: 25px;
+    border-radius: 2px;
+    border: none;
+    background: #fff;
+}
+
+.submitForm {
+    text-align: center;
+}
+
+.white {
+    color: #fff;
+}
+
+.alignment-mode {
+    /* margin-top: 9px; */
+    width: 15px;
+    height: 17px;
+    cursor: pointer;
+}
+
+.alignment-mode1 {
+    margin-top: 6px;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.alignment-mode2 {
+    margin-top: 6px;
+    width: 15px;
+    height: 17px;
+    cursor: pointer;
+}
+
+.alignment-mode3 {
+    margin-top: 6px;
+    width: 17px;
+    height: 19px;
+    cursor: pointer;
+}
+
+.alignment-mode0 {
+    margin-top: 9px;
+    width: 12px;
+    height: 15px;
+    cursor: pointer;
+}
+
+.top-floor {
+    width: 70px;
+    text-align: center;
+    cursor: pointer;
+}

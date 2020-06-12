@@ -1,0 +1,104 @@
+.card-main {
+    width: 100%;
+    height: calc(100% - 5rem);
+    padding: 0 .625rem;
+    padding-right: 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+}
+
+.nav-header {
+    width: 100%;
+    box-sizing: border-box;
+    height: 2.8125rem;
+    line-height: 2.8125rem;
+    border-bottom: 2px solid #ccc;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    color: #333;
+    font-size: 14px;
+
+    .nav-single {
+        margin-right: 10px;
+        cursor: pointer;
+        height: 2.9375rem;
+        border-bottom: 2px solid transparent;
+    }
+
+    .nav-select {
+        color: #409eff;
+        border-bottom: 2px solid #409eff;
+    }
+} 
+
+.model-make {
+    width: 100%;
+    flex: 1;
+    background-color: #eee;
+    flex-wrap: wrap;
+    flex-direction: column;
+
+    .model-make-top {
+        width: 100%;
+        height: 30px;
+        line-height: 32px;
+        padding: 0 30px;
+        box-sizing: border-box;
+        border-bottom: 1px solid #ccc;
+        // background-color: orange;
+
+        i {
+            cursor: pointer;
+            font-size: 1.25rem;
+            color: #234060;
+            transform: all .5s;
+            margin-right: 10px;
+        }
+
+        i:hover {
+            color: #054591;
+        }
+    }
+
+    .model-make-container {
+        width: 100%;
+        height: calc(100% - 30px);
+        display: flex;
+        justify-content: flex-start;
+
+        .model-make-left {
+            width: 30px;
+            height: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            border-right: 1px solid #ccc;
+            justify-content: center;
+            align-content: flex-start;
+
+            i {
+                cursor: pointer;
+                margin: 10px 0;
+                font-size: 1.25rem;
+            }
+        }
+
+        .model-make-right {
+            width: calc(100% - 30px);
+            height: 100%;
+
+            .mask {
+                width: 300px;
+                height: 400px;
+                background-color: #fff;
+            }
+        }
+    }
+
+}
+
+.vue-ruler-wrapper {
+    z-index: 10 !important;
+}
