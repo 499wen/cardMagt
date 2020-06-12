@@ -38,12 +38,48 @@
                         :is-scale-revise="true"
                         :preset-line="presetLine"
                     >
-                        <div class="mask" @drop="dropTest($event)" @dragover="allowDrop($event)"></div>
+                        <div class="mask phone-item" @drop="dropTest($event)" @dragover="allowDrop($event)"></div>
                     </vue-ruler-tool>
                 </div>
 
              </div>
         </div>
+
+
+
+		<!-- 这里是文字的模板 end?-->
+		<div v-show="false" id="imageTemplate" class="imageTemplate" style="height:150px;width:150px">
+			<div class="invite-text-box">
+				<div class="invite-text-box-text">
+					<div class="tip">请上传图片</div>
+				</div>
+				<div class="invite-text-box-border">
+					<div class="invite-text-box-border-container">
+						<div class="invite-text-box-border top-line move-line">
+							<div class="invite-text-box-border line-point s-resize top-line-point"></div>
+						</div>
+
+						<div class="invite-text-box-border left-line move-line">
+							<div class="invite-text-box-border line-point left-line-point"></div>
+						</div>
+
+						<div class="invite-text-box-border right-line move-line">
+							<div class="invite-text-box-border line-point right-line-point"></div>
+						</div>
+
+						<div class="invite-text-box-border bottom-line move-line">
+							<div class="invite-text-box-border line-point s-resize bottom-line-point"></div>
+						</div>
+
+						<div class="invite-text-box-border left-top-point up-point"></div>
+						<div class="invite-text-box-border right-top-point up-point"></div>
+						<div class="invite-text-box-border left-bottom-point up-point"></div>
+						<div class="invite-text-box-border right-bottom-point up-point"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--  这里是图片的模板 end-->
 
     </div>
 </template>

@@ -16,6 +16,8 @@ import {
 export default  {
     data() {
         return {
+            idList: [],
+            showKey: 0,
             headerTag: [
                 {label: '模板制作', name: '模板制作', select: true},
                 {label: '数据填充', name: '数据填充', select: false},

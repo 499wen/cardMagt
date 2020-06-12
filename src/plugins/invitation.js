@@ -46,16 +46,18 @@ export function drop(event, _this) {
 	let data = event.dataTransfer.getData("text");
 	//如果不是拖动的文本框，不响应
 	console.log(data)
-	if (!$(event.target).hasClass('phone-item')) {
+	console.log(event.target)
+	if (!event.target.classList.contains('phone-item')) {
 		return;
 	}
 	let node
 	var nodeValue;
+	console.log(3333)
 	if (data == 'invite-text') {
-		nodeValue = "文本333";
+		nodeValue = "文本";
 		node = document.getElementById('textTemplate').cloneNode(true);
 	} else if (data == 'image') {
-		nodeValue = "图片111";
+		nodeValue = "图片";
 		node = document.getElementById('imageTemplate').cloneNode(true);
 	}
 
@@ -74,7 +76,7 @@ export function drop(event, _this) {
 	console.log(node)
 	// 配置唯一ID
 	node.id = uuid()
-	console.log("node = "+node)
+	console.log("node = ", node)
 	var idObject = {};
 	idObject.id = node.id;
 	idObject.nodeValue=nodeValue;
@@ -100,10 +102,12 @@ export function drop(event, _this) {
 					"shadowDim":0,   //模糊
 					"shadowDirectionV":0,  // 水平
 					"shadowDirectionH":0,  //垂直方向
-}
+	}
+
 	nodeStyleMap.set(node.id,defaultStyle)
 	
-	
+	console.log(node)
+	// return 
 	// 设置控件位置和样式
 	$(node).css('display', 'block')
 	$(node).css('position', 'absolute')
@@ -111,6 +115,7 @@ export function drop(event, _this) {
 	$(node).css('transform', "translate(" + x + "px," + y + "px)")
 	// 把控件保存起来
 	nodes.set(node.id, node)
+
 	// 给控件绑定点击事件
 	$(node).click(function(e) {
 		e.stopPropagation()
