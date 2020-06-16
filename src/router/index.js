@@ -55,7 +55,7 @@ const routes = [
     // 重定向
     {
         path: '/',
-        redirect: '/index'
+        redirect: '/cardMagt'
     }
 ]
 

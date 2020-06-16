@@ -15,12 +15,17 @@ import VueRulerTool from 'vue-ruler-tool'
 import { vDrag } from './plugins/dray.js' //引入
 Vue.directive('drag', vDrag) // 拖拽
 
+// 引入jquery
+import $ from 'jquery'
+
 Vue.use(Avue);
 Vue.use(ElementUI)
 Vue.component('VueRulerTool', VueRulerTool)
 Vue.config.productionTip = false
 import Print from './plugins/print.js'
 Vue.use(Print)
+
+Vue.prototype.$ = $
 
 import './plugins/axios.js'
 

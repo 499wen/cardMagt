@@ -186,6 +186,7 @@
 .imageTemplate {
     background-size: 100% 100%;
     background-repeat: no-repeat;
+    z-index: 5;
 }
 .formTemplate{
     width: 90%;
@@ -372,7 +373,9 @@ ul li {
 }
 
 .top-floor {
-    width: 70px;
+    /* width: 70px; */
+
+    padding-right: 10px !important;
     text-align: center;
     cursor: pointer;
 }

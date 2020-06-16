@@ -1,7 +1,14 @@
+ul, li {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
 .card-main {
     width: 100%;
     height: calc(100% - 5rem);
-    padding: 0 .625rem;
+    padding: 0;
+    // padding: 0 .625rem;
     padding-right: 0;
     box-sizing: border-box;
     display: flex;
@@ -37,7 +44,7 @@
 .model-make {
     width: 100%;
     flex: 1;
-    background-color: #eee;
+    background-color: #fff;
     flex-wrap: wrap;
     flex-direction: column;
 
@@ -45,7 +52,7 @@
         width: 100%;
         height: 30px;
         line-height: 32px;
-        padding: 0 30px;
+        padding: 0 40px;
         box-sizing: border-box;
         border-bottom: 1px solid #ccc;
         // background-color: orange;
@@ -70,35 +77,215 @@
         justify-content: flex-start;
 
         .model-make-left {
-            width: 30px;
+            width: 40px;
             height: 100%;
             display: flex;
             flex-wrap: wrap;
+            padding: 0 5px;
+            box-sizing: border-box;
             border-right: 1px solid #ccc;
             justify-content: center;
             align-content: flex-start;
 
-            i {
+            .verson {
                 cursor: pointer;
-                margin: 10px 0;
-                font-size: 1.25rem;
+				margin: 10px 0;
+								
+                // font-size: 1.25rem;
             }
         }
 
         .model-make-right {
             width: calc(100% - 30px);
             height: 100%;
+            background-color: #ababab;
 
             .mask {
-                width: 300px;
-                height: 400px;
-                background-color: #fff;
+                width: 100%;
+                height: 100%;
+                // background-color: #fff;
+                overflow: hidden;
+                position: relative;
+                border: 1px solid #ccc;
             }
         }
     }
 
 }
 
-.vue-ruler-wrapper {
-    z-index: 10 !important;
+// 遮罩层 start
+.mask {
+    position: fixed;
+    width: 100%;
+    height: 100vh;
+    // background-color: rgba(255, 166, 0, 0.247);
+    z-index: 20;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .mask-box {
+        position: relative;
+        width: 390px;
+        height: 600px;
+        box-shadow: 1px 1px 5px 1px #ccc;
+        border-radius: 3px;
+        background-color: #fff;
+        padding: 10px;
+        box-sizing: border-box;
+        overflow-y: auto;
+        margin-top: -2.5rem;
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: column;
+
+        .close {
+            position: absolute;
+            box-sizing: border-box;
+            top: 0px;
+            right: 0px;
+            padding: 5px;
+            padding-left: 0;
+            width: 100%;
+            text-align: right;
+            background-color: #054592;
+            color: #fff;
+            // height: 30px;
+		}
+				
+        .model-box {
+            width: 100%;
+            flex: 1;
+            // background-color: orange;
+            padding-top: 10px;
+            box-sizing: border-box;
+
+            .model-ul {
+                width: 100%;
+                height: 100%;
+                overflow-y: auto;
+                overflow-x: hidden;
+
+                .model-single {
+                    width: 100%;
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: center;
+                    margin-bottom: 10px;
+                    color: #333;
+                    font-size: 14px;
+                    padding-bottom: 10px;
+                    border-bottom: 1px solid #ccc;
+
+                    span {
+                        width: 70px;
+                        text-align: right;
+                        margin-right: 10px;
+                    }
+
+                    .value {
+                        flex: 1;
+                        display: flex;
+                        justify-content: flex-start;
+                        align-items: flex-start;
+                        
+                    }
+                }
+            }
+        }
+    }
+}
+
+// 遮罩层 end
+
+.invite-progress {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+		box-sizing: border-box;
+		margin-top: 3px; 
+}
+
+#templateStyle {
+    padding-right: 5px;
+    box-sizing: border-box;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex: 1;
+    overflow-y: auto;
+}
+
+// 供选的字体颜色与背景颜色
+.default_color_box {
+    width: 110px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+		// height: 60px;
+		margin-left: 5px;
+
+    div {
+        width: 15px;
+        height: 15px;
+        border: 2px solid #ddd;
+        margin: 2px 0;
+        cursor: pointer;
+    }
+}
+
+::-webkit-scrollbar {
+    width: 4px;
+    height: 6px;
+    background-color: transparent !important;
+}
+
+
+::-webkit-scrollbar-track {
+    /*滚动条里面轨道*/
+    box-shadow   : inset 0 0 5px rgba(0, 0, 0, 0);
+    border-radius: 10px;
+    background   : rgba(0, 0, 0, 0) !important;
+}
+
+.option {
+	width: 100%;
+	height: 30px;
+	display: flex; 
+	justify-content: flex-start;
+	align-items: center;
+
+	li {
+		width: 20px;
+		height: 20px;
+		margin-right: 10px;
+
+		img {
+			width: 100%;
+			height: 100%;
+		}
+	}
+
+	div {
+		flex: 1;
+		height: 100%;
+		display: flex;
+		align-items: center;
+
+		li {
+			height: 100%;
+			width: 50px;
+			display: flex;
+			align-items: center;
+			margin-right: 0px;
+
+			img {
+				width: 15px !important;
+				height: 16px !important;
+				margin-top: 0;
+			}
+		}
+	}
 }

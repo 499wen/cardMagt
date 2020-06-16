@@ -15,14 +15,11 @@ let nodeHeight;
 let moveMethod;
 
 
-
-import $ from 'vue-jquery'
-
+import $ from 'jquery'
 
 window.allowDrop = function(event) {
 	event.preventDefault();
 }
-
 
 function textDrag(event) { 
 	event = event || window.event
@@ -34,8 +31,6 @@ export function textDragover(event) {
 	event = event || window.event
 	event.preventDefault()
 }
-
-
 
 export function drop(event, _this) {
 	event = event || window.event
@@ -52,7 +47,7 @@ export function drop(event, _this) {
 	}
 	let node
 	var nodeValue;
-	console.log(3333)
+
 	if (data == 'invite-text') {
 		nodeValue = "文本";
 		node = document.getElementById('textTemplate').cloneNode(true);
@@ -72,7 +67,6 @@ export function drop(event, _this) {
 	console.log("xy = " + x, y)
 	//复制一个文件编辑控件
 
-	
 	console.log(node)
 	// 配置唯一ID
 	node.id = uuid()
@@ -96,6 +90,7 @@ export function drop(event, _this) {
 					"borderColor": "#2c3e50",
 					"borderStyle":"none",
 					"borderWidth":0,
+					'hierarchy': '',
 					"borderRadius":0,
 					"shadowWidth":0,  //大小
 					"shadowColor":"#000",  //颜色
@@ -103,19 +98,27 @@ export function drop(event, _this) {
 					"shadowDirectionV":0,  // 水平
 					"shadowDirectionH":0,  //垂直方向
 	}
-
 	nodeStyleMap.set(node.id,defaultStyle)
-	
-	console.log(node)
-	// return 
+
 	// 设置控件位置和样式
 	$(node).css('display', 'block')
 	$(node).css('position', 'absolute')
 	console.log("设置 xy = " + x, y)
-	$(node).css('transform', "translate(" + x + "px," + y + "px)")
+	$(node).css('top', `${y}px`)
+	$(node).css('left', `${x}px`)
+
+
+	/**
+	 * bigX bigY   domX domY   x y
+	 * 如果 x < bigX / 2
+	 * 		var translateX = bigX / 2 - x - domX / 2
+	 * 但是如果 x >= bigX / 2
+	 * 		var translateX = x - (bigX / 2 - domX / 2)
+	 */
+	// $(node).css('transform', "translate(" + x + "px," + y + "px)")
 	// 把控件保存起来
 	nodes.set(node.id, node)
-
+	
 	// 给控件绑定点击事件
 	$(node).click(function(e) {
 		e.stopPropagation()
@@ -128,6 +131,7 @@ export function drop(event, _this) {
 			$(".check").removeClass("check")
 			$("#" +'itemId'+ node.id).addClass("check");
 		}
+		// return 
 		if(_this.activeName.length === 0){
 			_this.activeName.push("1")
 			 _this.activeName.push("2")
@@ -146,6 +150,10 @@ export function drop(event, _this) {
 	// })
 
 	// 给控件绑定鼠标按下的事件
+	$(node).dblclick( function (e){
+		_this.imgShow = true
+	})
+
 
 	$(node).mousedown(function(e) {
 		// 鼠标按下时，初始化当前控件的各项属性
@@ -386,6 +394,7 @@ function leftResize(moveX, moveY) {
 	if (nodeWidth - moveX <= 20) {
 		return
 	}
+	console.log('移动')
 	$(currentNode).css('width', (nodeWidth - moveX) / 375 * 101.5 + '%')
 	$(currentNode).css('transform', 'translate(' + (nodeX + moveX) + 'px,' + (nodeY) + 'px)');
 }
