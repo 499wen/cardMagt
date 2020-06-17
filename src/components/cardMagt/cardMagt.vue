@@ -61,7 +61,7 @@
         </div>
 
         <!-- 这里是图片的模板 start?-->
-        <div v-show="false" id="imageTemplate" class="imageTemplate" style="height:105px; width:105px">
+        <div v-show="false" id="imageTemplate" class="imageTemplate public" :style="{'height': '105px', 'width': '105px'}">
             <div class="invite-text-box">
                 <div class="invite-text-box-text" >
                     <div class="tip">双击选择图片</div>
@@ -96,7 +96,7 @@
 
         <!-- 这里是文字的模板 start-->
         <div class="mr20 ml15">
-            <div v-show="false" id="textTemplate" class="textTemplate" style="height:40px;width:60%">
+            <div v-show="false" id="textTemplate" class="textTemplate public" style="height:40px;width:60%">
                 <div class="invite-text-box">
                     <div class="invite-text-box-text edit-text" contenteditable="true">点击这里编辑</div>
                     <div class="invite-text-box-border">
@@ -137,7 +137,7 @@
                 </div>
                 <div style="width: 100%; height: 20px;"></div>
 
-                <!-- 图片 修改的功能 -->
+                <!-- 图片、文本 修改的功能 -->
                 <div id="templateStyle" v-if="true">
                     <el-collapse v-model="activeName">
                         <el-collapse-item title="基本样式" name="1">
@@ -394,6 +394,46 @@
                                 </div>
                             </div>
                         </el-collapse-item>
+                        <el-collapse-item title="位置大小" name="4">
+                            <!-- 文本 -->
+                           <ul class="position" v-if="!isImage">
+                               <li>
+                                   <span>左边距</span>
+                                   <el-input size='mini' v-model="text.paddingL"> </el-input>
+                               </li>
+                               <li>
+                                   <span>上边距</span>
+                                   <el-input size='mini' v-model="text.paddingT"> </el-input>
+                               </li>
+                                <li>
+                                   <span>高度</span>
+                                   <el-input size='mini' v-model="text.height"> </el-input>
+                               </li>
+                                <li>
+                                   <span>宽度</span>
+                                   <el-input size='mini' v-model="text.width"> </el-input>
+                               </li>
+                           </ul>
+                           <!-- 图片 -->
+                           <ul class="position" v-else>
+                               <li>
+                                   <span>左边距</span>
+                                   <el-input size='mini' v-model="img.paddingL"> </el-input>
+                               </li>
+                               <li>
+                                   <span>上边距</span>
+                                   <el-input size='mini' v-model="img.paddingT"> </el-input>
+                               </li>
+                                <li>
+                                   <span>高度</span>
+                                   <el-input size='mini' v-model="img.height"> </el-input>
+                               </li>
+                                <li>
+                                   <span>宽度</span>
+                                   <el-input size='mini' v-model="img.width"> </el-input>
+                               </li>
+                           </ul>
+                        </el-collapse-item>
                     </el-collapse>
                 </div>
             </div>
@@ -451,7 +491,7 @@
                         <li class="model-single" style="align-items: flex-start">
                             <span>背景图片:</span>
                             <div class="value">
-                                
+
                             </div>
                         </li>
                     </ul>

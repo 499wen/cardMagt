@@ -2,8 +2,8 @@ import time from '@/plugins/time.js'
 import $ from 'jquery'
 
 import {
-    hideBox,
-    idMap,
+    hideBox, 
+    idMap, 
     nodeStyleMap,
     nodes,
     drop,
@@ -18,9 +18,21 @@ var token = localStorage.getItem("token") || 'asdfghjklzxcvbndfgherghjkcvb123456
 export default  {
     data() {
         return {
-            imgShow: false,
+            imgShow: true,
             isImage: true,
-            modelShow: true,
+            modelShow: false,
+            img: {
+                paddingL: '',
+                paddingT: '',
+                width: '',
+                height: ''
+            },
+            text: {
+                paddingL: '',
+                paddingT: '',
+                width: '',
+                height: ''
+            },
             model: {
                 width: '300',
                 height: '400',
@@ -54,6 +66,9 @@ export default  {
                 shadowDirectionV: 0,
                 shadowDirectionH: 0,
                 shadowColor: "#000",
+
+                'width': '105', // 宽度
+                'height': '105', // 高度
             },
 
             activeName: [],
@@ -238,7 +253,7 @@ export default  {
         }
     },
     mounted() {
-
+       
     },
     watch: {
         // meetId: function(val, oldVal) {
@@ -349,8 +364,10 @@ export default  {
         "defaultStyle.shadowDirectionH": function() {
             this.setShadow();
         }, //shadowDirectionH
+
+        // 监听元素层级
         "defaultStyle.hierarchy": function(val) {
-            var template = document.querySelectorAll('.imageTemplate')
+            var template = document.querySelectorAll('.public')
             console.log(template)
             for(let i = 0; i < template.length - 1; i++) {
                 var curN = this.getCssVal(template[i], 'zIndex')
@@ -367,8 +384,101 @@ export default  {
 
             this.defaultStyle.hierarchy = val
             $(this.tNode).css("z-index", val);
-        }
+        },
 
+        // 监听图片元素位置大小 宽度 高度 上边距 左边距
+        "img.width": function(val) {
+            this.defaultStyle.width = val
+
+            $(this.tNode).css("width", val + 'px');
+        }, // width
+        "img.height": function(val) {
+            this.defaultStyle.height = val
+            $(this.tNode).css("height", val + 'px');
+        }, // height
+        "img.paddingT": function(val) {
+            console.log(this.defaultStyle)
+            var parent = document.querySelector('.mask'),
+                bigY = +parent.offsetHeight - 2,
+                translateY
+
+            console.log(val, bigY, translateY, this.defaultStyle.height)
+
+            if(val < (bigY / 2)){
+                translateY = -(bigY / 2 - val - this.defaultStyle.height / 2)
+            } else if(val >= (bigY / 2)){
+                translateY = val - bigY / 2 - this.defaultStyle.height / 2
+            }
+
+            // this.defaultStyle.top = bigY / 2 - val - (this.defaultStyle.height - 2) / 2
+            console.log($(this.tNode), translateY)
+            $(this.tNode).css("transform", `translate(${this.defaultStyle.translateX}px, ${translateY}px)`);
+            this.defaultStyle.translateY = translateY
+        }, // paddingT
+        "img.paddingL": function(val) {
+            var parent = document.querySelector('.mask'),
+                bigX = +parent.offsetWidth - 2,
+                translateX
+
+            console.log(val, bigX, translateX)
+
+            if(val < (bigX / 2)){
+                translateX = -(bigX / 2 - val - this.defaultStyle.width / 2)
+            } else if(val >= (bigX / 2)){
+                translateX = val - bigX / 2 - this.defaultStyle.width / 2
+            }
+
+            console.log($(this.tNode), translateX)
+            $(this.tNode).css("transform", `translate(${translateX}px, ${this.defaultStyle.translateY}px)`);
+            this.defaultStyle.translateX = translateX
+        }, // paddingL
+
+        // 监听文本元素位置大小 宽度 高度 上边距 左边距
+        "text.width": function(val) {
+            this.defaultStyle.width = val
+
+            $(this.tNode).css("width", val + 'px');
+        }, // width
+        "text.height": function(val) {
+            this.defaultStyle.height = val
+            $(this.tNode).css("height", val + 'px');
+        }, // height
+        "text.paddingT": function(val) {
+            console.log(this.defaultStyle)
+            var parent = document.querySelector('.mask'),
+                bigY = +parent.offsetHeight - 2,
+                translateY
+
+            console.log(val, bigY, translateY, this.defaultStyle.height)
+
+            if(val < (bigY / 2)){
+                translateY = -(bigY / 2 - val - this.defaultStyle.height / 2)
+            } else if(val >= (bigY / 2)){
+                translateY = val - bigY / 2 - this.defaultStyle.height / 2
+            }
+
+            // this.defaultStyle.top = bigY / 2 - val - (this.defaultStyle.height - 2) / 2
+            console.log($(this.tNode), translateY)
+            $(this.tNode).css("transform", `translate(${this.defaultStyle.translateX}px, ${translateY}px)`);
+            this.defaultStyle.translateY = translateY
+        }, // paddingT
+        "text.paddingL": function(val) {
+            var parent = document.querySelector('.mask'),
+                bigX = +parent.offsetWidth - 2,
+                translateX
+
+            console.log(val, bigX, translateX)
+
+            if(val < (bigX / 2)){
+                translateX = -(bigX / 2 - val - this.defaultStyle.width / 2)
+            } else if(val >= (bigX / 2)){
+                translateX = val - bigX / 2 - this.defaultStyle.width / 2
+            }
+
+            console.log($(this.tNode), translateX)
+            $(this.tNode).css("transform", `translate(${translateX}px, ${this.defaultStyle.translateY}px)`);
+            this.defaultStyle.translateX = translateX
+        }, // paddingL
     },
 
 }

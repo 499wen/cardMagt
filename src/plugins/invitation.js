@@ -7,7 +7,7 @@ let mouseIsDown = false;
 let currentNode;
 let mouseX = 0;
 let mouseY = 0;
-let nodeX = 0;
+let nodeX = 0; 
 let nodeY = 0;
 let nodeWidth;
 let nodeHeight;
@@ -76,7 +76,8 @@ export function drop(event, _this) {
 	idObject.nodeValue=nodeValue;
 	_this.idList.push(idObject)
 	idMap.set(node.id,_this.showKey)
-	var defaultStyle = {"textColor": "#2c3e50",
+	var defaultStyle = {
+					"textColor": "#2c3e50",
 					"fontFamily": "微软雅黑",
 					"fontSize": "14px",
 					"lineSpa": 0,
@@ -97,17 +98,23 @@ export function drop(event, _this) {
 					"shadowDim":0,   //模糊
 					"shadowDirectionV":0,  // 水平
 					"shadowDirectionH":0,  //垂直方向
+					
+					'width': '105', // 宽度
+					'height': '105', // 高度
+					'top': '0', // 上边距
+					'left': '0', // 左边距
+					"translateX": '', 
+					'translateY': ''
 	}
-	nodeStyleMap.set(node.id,defaultStyle)
 
-	// 设置控件位置和样式
-	$(node).css('display', 'block')
-	$(node).css('position', 'absolute')
-	console.log("设置 xy = " + x, y)
-	$(node).css('top', `${y}px`)
-	$(node).css('left', `${x}px`)
+	var mask = document.querySelector('.mask'),
+		bigX = mask.offsetWidth, 
+		bigY = mask.offsetHeight, 
+		domX = 105, 
+		domY = 105,
+		translateX, translateY
 
-
+	console.log('bigX, bigY, domX, domY, x, y::', bigX, bigY, domX, domY, x, y)
 	/**
 	 * bigX bigY   domX domY   x y
 	 * 如果 x < bigX / 2
@@ -115,7 +122,28 @@ export function drop(event, _this) {
 	 * 但是如果 x >= bigX / 2
 	 * 		var translateX = x - (bigX / 2 - domX / 2)
 	 */
-	// $(node).css('transform', "translate(" + x + "px," + y + "px)")
+	if(x < (bigX / 2)){
+		translateX = -(bigX / 2 - x - domX / 2)
+	} else if(x >= (bigX / 2)){
+		translateX = x - (bigX / 2 - domX / 2)
+	}
+
+	if(y < (bigY / 2)){
+		translateY = -(bigY / 2 - y - domY / 2)
+	} else if(y >= (bigY / 2)){
+		translateY = y - (bigY / 2 - domY / 2)
+	}
+
+	// 设置控件位置和样式
+	$(node).css('display', 'block')
+	$(node).css('position', 'absolute')
+	console.log('translateY,translateX: ', translateX, translateY)
+	$(node).css('transform', "translate(" + translateX + "px," + translateY + "px)")
+
+	defaultStyle.translateX = translateX
+	defaultStyle.translateY = translateY
+	nodeStyleMap.set(node.id,defaultStyle)
+
 	// 把控件保存起来
 	nodes.set(node.id, node)
 	
@@ -242,11 +270,8 @@ export function initNode(node, _this,text) {
 			 idMap.set(node.id,_this.showKey)
 			 
 		}
-	
 
 	nodes.set($(node).attr('id'), node)
-	
-
 	
 	$(node).click(function(e) {
 		e.stopPropagation()
@@ -394,8 +419,9 @@ function leftResize(moveX, moveY) {
 	if (nodeWidth - moveX <= 20) {
 		return
 	}
-	console.log('移动')
-	$(currentNode).css('width', (nodeWidth - moveX) / 375 * 101.5 + '%')
+	console.log('移动', moveX, moveY)
+	console.log(nodeWidth - moveX)
+	$(currentNode).css('width', (nodeWidth - moveX) / 300 * 101.5 + '%')
 	$(currentNode).css('transform', 'translate(' + (nodeX + moveX) + 'px,' + (nodeY) + 'px)');
 }
 
@@ -403,7 +429,7 @@ function rightResize(moveX, moveY) {
 	if (nodeWidth + moveX <= 20) {
 		return
 	}
-	$(currentNode).css('width', (nodeWidth + moveX) / 375 * 101.5 + '%')
+	$(currentNode).css('width', (nodeWidth + moveX) / 300 * 101.5 + '%')
 	// $(currentNode).css('transform','translate('+(nodeX+moveX)+'px,'+(nodeY)+'px)');
 }
 
