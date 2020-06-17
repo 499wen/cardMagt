@@ -2,7 +2,7 @@ import time from '@/plugins/time.js'
 import $ from 'jquery'
 
 import {
-    hideBox, 
+    hideBox,  
     idMap, 
     nodeStyleMap,
     nodes,
@@ -18,6 +18,38 @@ var token = localStorage.getItem("token") || 'asdfghjklzxcvbndfgherghjkcvb123456
 export default  {
     data() {
         return {
+            tableData: [{
+                date: '2016-05-03',
+                name: '王小虎',
+                address: '上海市普陀区金沙江路 1518 弄'
+              }, {
+                date: '2016-05-02',
+                name: '王小虎',
+                address: '上海市普陀区金沙江路 1518 弄'
+              }, {
+                date: '2016-05-04',
+                name: '王小虎',
+                address: '上海市普陀区金沙江路 1518 弄'
+              }, {
+                date: '2016-05-01',
+                name: '王小虎',
+                address: '上海市普陀区金沙江路 1518 弄'
+              }, {
+                date: '2016-05-08',
+                name: '王小虎',
+                address: '上海市普陀区金沙江路 1518 弄'
+              }, {
+                date: '2016-05-06',
+                name: '王小虎',
+                address: '上海市普陀区金沙江路 1518 弄'
+              }, {
+                date: '2016-05-07',
+                name: '王小虎',
+                address: '上海市普陀区金沙江路 1518 弄'
+              }],
+              multipleSelection: [],
+        
+            show: false,
             imgShow: true,
             isImage: true,
             modelShow: false,
@@ -41,8 +73,8 @@ export default  {
             },
 
             headers: {
-                Authorization: token,
-                token: token
+                // Authorization: token,
+                // token: token
             },
             defaultStyle: {
                 textColor: "#2c3e50",
@@ -77,18 +109,44 @@ export default  {
             headerTag: [
                 {label: '模板制作', name: '模板制作', select: true},
                 {label: '数据填充', name: '数据填充', select: false},
-                {label: '导出', name: '导出', select: false},
+                // {label: '导出', name: '导出', select: false},
             ],
             presetLine: [{ type: 'l', site: 50 }, { type: 'v', site: 50 }],
-            aaa: true
+            aaa: true,
+            tc: ''
         }
     },
     methods: {
+        toggleSelection(rows) {
+            if (rows) {
+                rows.forEach(row => {
+                    this.$refs.multipleTable.toggleRowSelection(row);
+                });
+            } else {
+                this.$refs.multipleTable.clearSelection();
+            }
+        },
+        handleSelectionChange(val) {
+            this.multipleSelection = val;
+        },
         // 模板 - 选择颜色
         colorSelect(e){
             this.model.bgcolor = e
         },
         switchTab:function(idx){ 
+            var box = document.querySelector('.box'),
+                none = document.querySelector('.invite-text-box-border')
+            if(idx == 1){
+                console.dir(box.parentNode.innerHTML)
+                none.style.display = 'none'
+                this.tc = box.parentNode.innerHTML
+                setTimeout(() => {
+                    this.show = true
+                }, 11500)
+            } else if(idx == 0){
+                none.style.display = 'block'
+            }
+            // return 
             this.headerTag.map((item, index) => index == idx ? item.select = true : item.select = false)
         },
         // 图片移动
@@ -197,6 +255,43 @@ export default  {
                 this.isImage = false;
             }
         },
+        // 模板 - 捕获上传图片
+        imgFileModel(e){
+            console.log('change: ', e)
+            var img = URL.createObjectURL(e.raw),
+                box = document.querySelector('.box')
+            console.log(img)
+      
+            setTimeout(() => {
+                box.style.backgroundImage = `url(${img})`
+            }, 500)
+
+        },
+        uploadImageModel: function(res) {
+            console.log(res);
+            if (res.code == "000") {
+                let locationUrl = "/api/filecenter/file/file/" + res.data.id;
+
+                // $(this.tNode).find('.invite-text-box-text').css('background-image','url("'+res.src+'")')
+                $(this.tNode).css("background-image", 'url("' + locationUrl + '")');
+                $(this.tNode)
+                    .find(".tip")
+                    .css("display", "none");
+            }
+            this.$refs.elupload.clearFiles();
+        }, //uploadImage
+        // 捕获上传图片
+        imgFile(e){
+            console.log('change: ', e)
+            var img = URL.createObjectURL(e.raw)
+            console.log(img, this.tNode)
+      
+            setTimeout(() => {
+                this.tNode.style.backgroundImage = `url(${img})`
+                this.tNode.style.color = `transparent`
+            }, 500)
+
+        },
         uploadImage: function(res) {
             console.log(res);
             if (res.code == "000") {
@@ -253,7 +348,7 @@ export default  {
         }
     },
     mounted() {
-       
+
     },
     watch: {
         // meetId: function(val, oldVal) {

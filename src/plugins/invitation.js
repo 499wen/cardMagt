@@ -12,7 +12,7 @@ let nodeY = 0;
 let nodeWidth;
 let nodeHeight;
 
-let moveMethod;
+let moveMethod; 
 
 
 import $ from 'jquery'
@@ -139,6 +139,7 @@ export function drop(event, _this) {
 	$(node).css('position', 'absolute')
 	console.log('translateY,translateX: ', translateX, translateY)
 	$(node).css('transform', "translate(" + translateX + "px," + translateY + "px)")
+	$(node).css('transform', "translate(" + x + "px," + y + "px)")
 
 	defaultStyle.translateX = translateX
 	defaultStyle.translateY = translateY
@@ -204,19 +205,26 @@ export function drop(event, _this) {
 		console.log($(e.target).hasClass('top-line-point'))
 		if ($(e.target).hasClass('top-line-point')) {
 			moveMethod = 'topResize'
-		} else if ($(e.target).hasClass('left-line-point')) {
+		}
+		 if ($(e.target).hasClass('left-line-point')) {
 			moveMethod = 'leftResize'
-		} else if ($(e.target).hasClass('right-line-point')) {
+		}
+		if ($(e.target).hasClass('right-line-point')) {
 			moveMethod = 'rightResize'
-		} else if ($(e.target).hasClass('bottom-line-point')) {
+		} 
+		if ($(e.target).hasClass('bottom-line-point')) {
 			moveMethod = 'bottomResize'
-		} else if ($(e.target).hasClass('left-top-point')) {
+		}
+		 if ($(e.target).hasClass('left-top-point')) {
 			moveMethod = 'leftTopResize'
-		} else if ($(e.target).hasClass('right-top-point')) {
+		}
+		 if ($(e.target).hasClass('right-top-point')) {
 			moveMethod = 'rightTopResize'
-		} else if ($(e.target).hasClass('left-bottom-point')) {
+		}
+		 if ($(e.target).hasClass('left-bottom-point')) {
 			moveMethod = 'leftBottomResize'
-		} else if ($(e.target).hasClass('right-bottom-point')) {
+		}
+		 if ($(e.target).hasClass('right-bottom-point')) {
 			moveMethod = 'rightBottomResize'
 		}
 
@@ -314,19 +322,26 @@ export function initNode(node, _this,text) {
 		console.log($(e.target).hasClass('top-line-point'))
 		if ($(e.target).hasClass('top-line-point')) {
 			moveMethod = 'topResize'
-		} else if ($(e.target).hasClass('left-line-point')) {
+		}
+		 if ($(e.target).hasClass('left-line-point')) {
 			moveMethod = 'leftResize'
-		} else if ($(e.target).hasClass('right-line-point')) {
+		}
+		 if ($(e.target).hasClass('right-line-point')) {
 			moveMethod = 'rightResize'
-		} else if ($(e.target).hasClass('bottom-line-point')) {
+		}
+		 if ($(e.target).hasClass('bottom-line-point')) {
 			moveMethod = 'bottomResize'
-		} else if ($(e.target).hasClass('left-top-point')) {
+		}
+		 if ($(e.target).hasClass('left-top-point')) {
 			moveMethod = 'leftTopResize'
-		} else if ($(e.target).hasClass('right-top-point')) {
+		}
+		 if ($(e.target).hasClass('right-top-point')) {
 			moveMethod = 'rightTopResize'
-		} else if ($(e.target).hasClass('left-bottom-point')) {
+		}
+		 if ($(e.target).hasClass('left-bottom-point')) {
 			moveMethod = 'leftBottomResize'
-		} else if ($(e.target).hasClass('right-bottom-point')) {
+		}
+		 else if ($(e.target).hasClass('right-bottom-point')) {
 			moveMethod = 'rightBottomResize'
 		}
 
@@ -419,9 +434,8 @@ function leftResize(moveX, moveY) {
 	if (nodeWidth - moveX <= 20) {
 		return
 	}
-	console.log('移动', moveX, moveY)
-	console.log(nodeWidth - moveX)
-	$(currentNode).css('width', (nodeWidth - moveX) / 300 * 101.5 + '%')
+
+	$(currentNode).css('width', (nodeWidth - moveX) / 298 * 101.5 + '%')
 	$(currentNode).css('transform', 'translate(' + (nodeX + moveX) + 'px,' + (nodeY) + 'px)');
 }
 
