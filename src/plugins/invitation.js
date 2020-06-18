@@ -11,6 +11,7 @@ let nodeX = 0;
 let nodeY = 0;
 let nodeWidth;
 let nodeHeight;
+let nodeNum = 0
 
 let moveMethod; 
 
@@ -104,7 +105,9 @@ export function drop(event, _this) {
 					'top': '0', // 上边距
 					'left': '0', // 左边距
 					"translateX": '', 
-					'translateY': ''
+					'translateY': '',
+
+					varName: '', // 变量名
 	}
 
 	var mask = document.querySelector('.mask'),
@@ -138,12 +141,14 @@ export function drop(event, _this) {
 	$(node).css('display', 'block')
 	$(node).css('position', 'absolute')
 	console.log('translateY,translateX: ', translateX, translateY)
-	$(node).css('transform', "translate(" + translateX + "px," + translateY + "px)")
+	// $(node).css('transform', "translate(" + translateX + "px," + translateY + "px)")
 	$(node).css('transform', "translate(" + x + "px," + y + "px)")
 
-	defaultStyle.translateX = translateX
-	defaultStyle.translateY = translateY
+	defaultStyle.translateX = x
+	defaultStyle.translateY = y
 	nodeStyleMap.set(node.id,defaultStyle)
+
+	console.log(node)
 
 	// 把控件保存起来
 	nodes.set(node.id, node)
@@ -181,6 +186,7 @@ export function drop(event, _this) {
 	// 给控件绑定鼠标按下的事件
 	$(node).dblclick( function (e){
 		_this.imgShow = true
+		console.log(defaultStyle)
 	})
 
 
@@ -347,8 +353,6 @@ export function initNode(node, _this,text) {
 
 	});
 }
-
-
 
 function uuid() {
 	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {

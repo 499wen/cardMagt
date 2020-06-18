@@ -95,12 +95,30 @@ ul, li {
                 // font-size: 1.25rem;
             }
         }
+
+        .model-make-right {
+            width: 200px;
+            height: 100%;
+            box-sizing: border-box;
+
+            .ele-list {
+                width: 100%;
+                height: 30px;
+                line-height: 30px;
+                text-align: center;
+                color: #333;
+                font-size: 15px;
+                letter-spacing: 1px;
+                box-shadow: 1px 1px 5px 1px #ccc;
+            }
+        }
     }
 
 }
 
-.model-make-right {
-    width: calc(100% - 30px);
+.model-make-center {
+    // width: calc(100% - 30px);
+    flex: 1;
     height: 100%;
     background-color: #ababab;
     position: relative;
@@ -129,6 +147,7 @@ ul, li {
     background-size: 100% 100%;
     background-repeat: no-repeat;
     background-position: center center;
+    overflow: hidden;
 }
 
 .mask {
@@ -136,24 +155,54 @@ ul, li {
     height: 100%;
     // background-color: #fff;
     box-sizing: border-box;
-    overflow: hidden;
     position: relative;
-    border: 1px solid #ccc;
+    // border: 1px solid #ccc;
+
+    .mask-direction {
+        position: absolute;
+        border: 1px solid red;
+        width: 800px;
+        height: 800px;
+    }
+
+    .mask-leftTop {
+        right: calc(100%);
+        bottom: calc(100%);
+    }
+
+    .mask-leftBottom {
+        right: calc(100%);
+        top: calc(100%);
+    }
+
+    .mask-rightTop {
+        left: calc(100%);
+        bottom: calc(100%);
+    }
+    .mask-rightBottom {
+        left: calc(100%);
+        top: calc(100%);
+    }
 }
 
 // 遮罩层 start
-.musk {
-    position: fixed;
-    width: 100%;
-    height: 100vh;
-    // background-color: rgba(255, 166, 0, 0.247);
-    z-index: 20;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+// .musk {
+//     position: fixed;
+//     width: 100%;
+//     height: 100vh;
+//     // background-color: rgba(255, 166, 0, 0.247);
+//     z-index: 20;
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
 
     .mask-box {
-        position: relative;
+        z-index: 20;
+        position: fixed;
+        top: 50%;
+        margin-top: -21.25rem;
+        left: 50%;
+        margin-left: -12.1875rem;
         width: 390px;
         height: 600px;
         box-shadow: 1px 1px 5px 1px #ccc;
@@ -162,7 +211,6 @@ ul, li {
         padding: 10px;
         box-sizing: border-box;
         overflow-y: auto;
-        margin-top: -2.5rem;
         display: flex;
         flex-wrap: wrap;
         flex-direction: column;
@@ -214,6 +262,7 @@ ul, li {
                     .value {
                         flex: 1;
                         display: flex;
+                        margin-top: 5px;
                         justify-content: flex-start;
                         align-items: flex-start;
                         
@@ -222,7 +271,7 @@ ul, li {
             }
         }
     }
-}
+// }
 
 .position {
     width: 100%;

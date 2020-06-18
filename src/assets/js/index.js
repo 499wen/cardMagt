@@ -16,7 +16,7 @@ import {
 var token = localStorage.getItem("token") || 'asdfghjklzxcvbndfgherghjkcvb123456'
 
 export default  {
-    data() {
+    data() { 
         return {
             tableData: [{
                 date: '2016-05-03',
@@ -48,9 +48,12 @@ export default  {
                 address: '上海市普陀区金沙江路 1518 弄'
               }],
               multipleSelection: [],
-        
+            
+            eleList: [
+                
+            ],
             show: false,
-            imgShow: true,
+            imgShow: false,
             isImage: true,
             modelShow: false,
             img: {
@@ -101,8 +104,10 @@ export default  {
 
                 'width': '105', // 宽度
                 'height': '105', // 高度
+                varName: '', // 变量名
             },
 
+            varName: '',
             activeName: [],
             idList: [],
             showKey: 0,
@@ -135,16 +140,26 @@ export default  {
         },
         switchTab:function(idx){ 
             var box = document.querySelector('.box'),
-                none = document.querySelector('.invite-text-box-border')
+                none = document.querySelectorAll('.invite-text-box-border')
+
+            // 数据填充
             if(idx == 1){
                 console.dir(box.parentNode.innerHTML)
-                none.style.display = 'none'
+
+                // 将元素选中提示 隐藏
+                for(let i of none){
+                    i.style.display = 'none'
+                }
+                // none.map(item => item.style.display = 'none')
+                
                 this.tc = box.parentNode.innerHTML
-                setTimeout(() => {
-                    this.show = true
-                }, 11500)
+
+                // 模板制作
             } else if(idx == 0){
-                none.style.display = 'block'
+                // none.map(item => item.style.display = 'block')
+                for(let i of none){
+                    i.style.display = 'block'
+                }
             }
             // return 
             this.headerTag.map((item, index) => index == idx ? item.select = true : item.select = false)
@@ -256,11 +271,13 @@ export default  {
             }
         },
         // 模板 - 捕获上传图片
-        imgFileModel(e){
-            console.log('change: ', e)
+        imgFileModel(e, fileList){
+            console.log('change: ', e, fileList)
+            if(e.status != "ready") return 
+            
             var img = URL.createObjectURL(e.raw),
                 box = document.querySelector('.box')
-            console.log(img)
+            console.log(box)
       
             setTimeout(() => {
                 box.style.backgroundImage = `url(${img})`
@@ -280,9 +297,15 @@ export default  {
             }
             this.$refs.elupload.clearFiles();
         }, //uploadImage
+
+        preview(file){
+            console.log(file)
+        },
         // 捕获上传图片
         imgFile(e){
             console.log('change: ', e)
+            if(e.status != "ready") return 
+
             var img = URL.createObjectURL(e.raw)
             console.log(img, this.tNode)
       
@@ -481,6 +504,19 @@ export default  {
             $(this.tNode).css("z-index", val);
         },
 
+        // 变量名
+        "defaultStyle.varName": function(val) {
+            this.varName = val
+            this.defaultStyle.varName = val
+            console.log(this.defaultStyle, this.tNode)
+            this.tNode.dataset.cont = val
+        },
+        "varName": function(val) {
+            this.defaultStyle.varName = val
+            console.log(this.defaultStyle, this.tNode)
+            this.tNode.dataset.cont = val
+        },
+
         // 监听图片元素位置大小 宽度 高度 上边距 左边距
         "img.width": function(val) {
             this.defaultStyle.width = val
@@ -493,39 +529,43 @@ export default  {
         }, // height
         "img.paddingT": function(val) {
             console.log(this.defaultStyle)
-            var parent = document.querySelector('.mask'),
-                bigY = +parent.offsetHeight - 2,
-                translateY
+            // var parent = document.querySelector('.mask'),
+            //     bigY = +parent.offsetHeight - 2,
+            //     translateY
 
-            console.log(val, bigY, translateY, this.defaultStyle.height)
+            // console.log(val, bigY, translateY, this.defaultStyle.height)
 
-            if(val < (bigY / 2)){
-                translateY = -(bigY / 2 - val - this.defaultStyle.height / 2)
-            } else if(val >= (bigY / 2)){
-                translateY = val - bigY / 2 - this.defaultStyle.height / 2
-            }
+            // if(val < (bigY / 2)){
+            //     translateY = -(bigY / 2 - val - this.defaultStyle.height / 2)
+            // } else if(val >= (bigY / 2)){
+            //     translateY = val - bigY / 2 - this.defaultStyle.height / 2
+            // }
+            // console.log($(this.tNode), translateY)
+            // $(this.tNode).css("transform", `translate(${this.defaultStyle.translateX}px, ${translateY}px)`);
+            // this.defaultStyle.translateY = translateY
+            $(this.tNode).css("transform", `translate(${this.defaultStyle.translateX}px, ${val}px)`);
+            this.defaultStyle.translateY = val
 
-            // this.defaultStyle.top = bigY / 2 - val - (this.defaultStyle.height - 2) / 2
-            console.log($(this.tNode), translateY)
-            $(this.tNode).css("transform", `translate(${this.defaultStyle.translateX}px, ${translateY}px)`);
-            this.defaultStyle.translateY = translateY
         }, // paddingT
         "img.paddingL": function(val) {
-            var parent = document.querySelector('.mask'),
-                bigX = +parent.offsetWidth - 2,
-                translateX
+            // var parent = document.querySelector('.mask'),
+            //     bigX = +parent.offsetWidth - 2,
+            //     translateX
 
-            console.log(val, bigX, translateX)
+            // console.log(val, bigX, translateX)
 
-            if(val < (bigX / 2)){
-                translateX = -(bigX / 2 - val - this.defaultStyle.width / 2)
-            } else if(val >= (bigX / 2)){
-                translateX = val - bigX / 2 - this.defaultStyle.width / 2
-            }
+            // if(val < (bigX / 2)){
+            //     translateX = -(bigX / 2 - val - this.defaultStyle.width / 2)
+            // } else if(val >= (bigX / 2)){
+            //     translateX = val - bigX / 2 - this.defaultStyle.width / 2
+            // }
 
-            console.log($(this.tNode), translateX)
-            $(this.tNode).css("transform", `translate(${translateX}px, ${this.defaultStyle.translateY}px)`);
-            this.defaultStyle.translateX = translateX
+            // console.log($(this.tNode), translateX)
+            // $(this.tNode).css("transform", `translate(${translateX}px, ${this.defaultStyle.translateY}px)`);
+            // this.defaultStyle.translateX = translateX
+
+            $(this.tNode).css("transform", `translate(${val}px, ${this.defaultStyle.translateY}px)`);
+            this.defaultStyle.translateX = val
         }, // paddingL
 
         // 监听文本元素位置大小 宽度 高度 上边距 左边距
@@ -540,39 +580,43 @@ export default  {
         }, // height
         "text.paddingT": function(val) {
             console.log(this.defaultStyle)
-            var parent = document.querySelector('.mask'),
-                bigY = +parent.offsetHeight - 2,
-                translateY
+            // var parent = document.querySelector('.mask'),
+            //     bigY = +parent.offsetHeight - 2,
+            //     translateY
 
-            console.log(val, bigY, translateY, this.defaultStyle.height)
+            // console.log(val, bigY, translateY, this.defaultStyle.height)
 
-            if(val < (bigY / 2)){
-                translateY = -(bigY / 2 - val - this.defaultStyle.height / 2)
-            } else if(val >= (bigY / 2)){
-                translateY = val - bigY / 2 - this.defaultStyle.height / 2
-            }
+            // if(val < (bigY / 2)){
+            //     translateY = -(bigY / 2 - val - this.defaultStyle.height / 2)
+            // } else if(val >= (bigY / 2)){
+            //     translateY = val - bigY / 2 - this.defaultStyle.height / 2
+            // }
 
-            // this.defaultStyle.top = bigY / 2 - val - (this.defaultStyle.height - 2) / 2
-            console.log($(this.tNode), translateY)
-            $(this.tNode).css("transform", `translate(${this.defaultStyle.translateX}px, ${translateY}px)`);
-            this.defaultStyle.translateY = translateY
+            // console.log($(this.tNode), translateY)
+            // $(this.tNode).css("transform", `translate(${this.defaultStyle.translateX}px, ${translateY}px)`);
+            // this.defaultStyle.translateY = translateY
+            $(this.tNode).css("transform", `translate(${this.defaultStyle.translateX}px, ${val}px)`);
+            this.defaultStyle.translateY = val
         }, // paddingT
         "text.paddingL": function(val) {
-            var parent = document.querySelector('.mask'),
-                bigX = +parent.offsetWidth - 2,
-                translateX
+            // var parent = document.querySelector('.mask'),
+            //     bigX = +parent.offsetWidth - 2,
+            //     translateX
 
-            console.log(val, bigX, translateX)
+            // console.log(val, bigX, translateX)
 
-            if(val < (bigX / 2)){
-                translateX = -(bigX / 2 - val - this.defaultStyle.width / 2)
-            } else if(val >= (bigX / 2)){
-                translateX = val - bigX / 2 - this.defaultStyle.width / 2
-            }
+            // if(val < (bigX / 2)){
+            //     translateX = -(bigX / 2 - val - this.defaultStyle.width / 2)
+            // } else if(val >= (bigX / 2)){
+            //     translateX = val - bigX / 2 - this.defaultStyle.width / 2
+            // }
 
-            console.log($(this.tNode), translateX)
-            $(this.tNode).css("transform", `translate(${translateX}px, ${this.defaultStyle.translateY}px)`);
-            this.defaultStyle.translateX = translateX
+            // console.log($(this.tNode), translateX)
+            // $(this.tNode).css("transform", `translate(${translateX}px, ${this.defaultStyle.translateY}px)`);
+            // this.defaultStyle.translateX = translateX
+
+            $(this.tNode).css("transform", `translate(${val}px, ${this.defaultStyle.translateY}px)`);
+            this.defaultStyle.translateX = val
         }, // paddingL
     },
 
