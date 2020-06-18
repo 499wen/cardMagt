@@ -118,10 +118,16 @@ export default  {
             ],
             presetLine: [{ type: 'l', site: 50 }, { type: 'v', site: 50 }],
             aaa: true,
-            tc: ''
+            tc: '',
+            curElem: ''
         }
     },
     methods: {
+        // 元素列表 - 选中的元素
+        selectDom(item){
+            console.log(item.dom)
+            item.dom.click()
+        },
         toggleSelection(rows) {
             if (rows) {
                 rows.forEach(row => {
@@ -168,6 +174,7 @@ export default  {
         imgDrag: function(event) {
             console.log("图片元素 ");
             event = event || window.event;
+            this.curElem = '图片元素'
 
             event.dataTransfer.setData("text", "image");
         },
@@ -181,6 +188,7 @@ export default  {
         textDrag: function(event) {
             console.log("文本元素 ");
             event = event || window.event;
+            this.curElem = '文本元素'
 
             event.dataTransfer.setData("text", "invite-text");
         },

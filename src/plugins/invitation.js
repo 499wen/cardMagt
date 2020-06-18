@@ -148,6 +148,13 @@ export function drop(event, _this) {
 	defaultStyle.translateY = y
 	nodeStyleMap.set(node.id,defaultStyle)
 
+	// 将创建的元素  保存eleList 数组中
+	_this.eleList.push({
+		name: _this.curElem + (+_this.eleList.length + 1),
+		dom: node
+	})
+
+	console.log('eleList === ', _this.eleList)
 	console.log(node)
 
 	// 把控件保存起来

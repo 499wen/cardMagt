@@ -66,6 +66,9 @@
                 <!-- 右侧部分 -->
                 <div class="model-make-right">
                     <div class="ele-list">元素列表</div>
+                    <div class="ele-single">
+                        <el-button v-for="(item, idx) in eleList" size="mini" @click="selectDom(item)" :key="idx">{{ item.name }}</el-button>
+                    </div>
                 </div>
              </div>
         </div>
