@@ -21,6 +21,11 @@
                 <!-- 左侧部分 -->
                 <div class="model-make-left">
                      
+                    <!-- 新建 -->
+                    <ul>
+                        <i class="el-icon-circle-plus-outline fontSize" title="新建"></i>
+                    </ul>
+
                     <!-- 图片 -->
                     <ul class="pl20 verson" draggable="true" @dragstart="imgDrag($event)" @dragover="imgDragover($event)" style=" z-index: 11">
                         <img class="invittext" src="../../../public/static/images/invitimages.png" title="拖拽到手机进行编辑" />
@@ -30,14 +35,11 @@
                     <ul class="verson text-area" draggable="true" @dragstart="textDrag($event)" @dragover="textDragover($event)" style="padding-left:0px;">
                         <img class="invittext" src="../../../public/static/images/invittext.png" title="拖拽到手机进行编辑" />
                     </ul>
-                     <!-- <i class="el-icon-picture" style="opacity: 0"></i>
-                     <i class="el-icon-picture"></i>
-                     <i class="el-icon-picture"></i> -->
 
                 </div>
 
                 <!-- 中间部分 -->
-                <div class="model-make-center">
+                <div class="model-make-center" style="flex: 1">
 
                     <vue-ruler-tool
                         :content-layout="{left: 0,top: 0}"
@@ -67,7 +69,10 @@
                 <div class="model-make-right">
                     <div class="ele-list">元素列表</div>
                     <div class="ele-single">
-                        <el-button v-for="(item, idx) in eleList" size="mini" @click="selectDom(item)" :key="idx">{{ item.name }}</el-button>
+                        <div v-for="(item, idx) in eleList" :key="idx">
+                            <el-button v-if="item.select" type="primary" size="mini" @click="selectDom(item, idx)">{{ item.name }}</el-button>
+                            <el-button v-else size="mini" @click="selectDom(item, idx)">{{ item.name }}</el-button>
+                        </div>
                     </div>
                 </div>
              </div>
@@ -96,29 +101,32 @@
                     style="width: 100%"
                     border
                     @selection-change="handleSelectionChange"
+                    @row-click='rowClick'
                 >
 
                     <el-table-column align="center" type="selection" width="55"></el-table-column>
 
+                    <el-table-column align="center" prop="name" label="姓名" width=""> </el-table-column>
                     <el-table-column align="center" label="日期" width="">
-                        <template slot-scope="scope">{{ scope.row.date }}</template>
+                        <template slot-scope="scope">
+                            <div>
+                                <img :src="scope.row.fans" width="60" height='60'/>
+                            </div>
+                        </template>
                     </el-table-column>
 
-                    <el-table-column align="center" prop="name" label="姓名" width=""> </el-table-column>
-                    <el-table-column align="center" prop="address" label="地址" show-overflow-tooltip></el-table-column>
                 </el-table>
 
             </div>
         </div>
 
-
         <!-- 这里是图片的模板 start?-->
         <div v-show="false" id="imageTemplate" class="imageTemplate public" :style="{'height': '105px', 'width': '105px'}">
             <div class="invite-text-box">
-                <div class="invite-text-box-text" >
-                    <div class="tip">双击选择图片</div>
+                <div class="invite-text-box-text">
+                    <div class="tip a1">双击选择图片</div>
                 </div>
-                <div class="invite-text-box-border">
+                <div class="invite-text-box-border i-t-b-border">
                     <div class="invite-text-box-border-container">
                         <div class="invite-text-box-border top-line move-line">
                             <div class="invite-text-box-border line-point s-resize top-line-point"></div>
@@ -150,9 +158,9 @@
         <div class="mr20 ml15">
             <div v-show="false" id="textTemplate" class="textTemplate public" style="height:40px;width:60%">
                 <div class="invite-text-box">
-                    <div class="invite-text-box-text edit-text" contenteditable="true">点击这里编辑</div>
+                    <div class="invite-text-box-text edit-text tip">点击这里编辑</div>
                     <div class="invite-text-box-border">
-                        <div class="invite-text-box-border-container">
+                        <div class="invite-text-box-border-container i-t-b-border">
                             <div class="invite-text-box-border top-line move-line">
                                 <div class="invite-text-box-border line-point s-resize top-line-point"></div>
                             </div>

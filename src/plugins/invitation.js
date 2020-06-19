@@ -107,7 +107,7 @@ export function drop(event, _this) {
 					"translateX": '', 
 					'translateY': '',
 
-					varName: '', // 变量名
+					'varName': '', // 变量名
 	}
 
 	var mask = document.querySelector('.mask'),
@@ -148,11 +148,20 @@ export function drop(event, _this) {
 	defaultStyle.translateY = y
 	nodeStyleMap.set(node.id,defaultStyle)
 
-	// 将创建的元素  保存eleList 数组中
+	let num = _this.eleList.filter( item => item.tips == _this.curElem && item ).length
+
+	// 去除其它的选中
+	_this.eleList.filter(item => item.select = false)
+	// 将创建的元素 保存eleList 数组中
 	_this.eleList.push({
-		name: _this.curElem + (+_this.eleList.length + 1),
-		dom: node
+		name: _this.curElem + (+num + 1),
+		dom: node,
+		tips: _this.curElem,
+		select: true
 	})
+
+	// 用作 选中元素时 的判断
+	node.eleListName = _this.curElem + (+num + 1)
 
 	console.log('eleList === ', _this.eleList)
 	console.log(node)
@@ -162,6 +171,7 @@ export function drop(event, _this) {
 	
 	// 给控件绑定点击事件
 	$(node).click(function(e) {
+		console.log($(this), _this)
 		e.stopPropagation()
 		e.preventDefault()
 		hideBox()

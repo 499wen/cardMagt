@@ -19,39 +19,17 @@ export default  {
     data() { 
         return {
             tableData: [{
-                date: '2016-05-03',
+                fans: 'https://pic4.zhimg.com/80/v2-47a389a0c35f02f7263f7af7ebe37187_1440w.jpg',
                 name: '王小虎',
                 address: '上海市普陀区金沙江路 1518 弄'
               }, {
-                date: '2016-05-02',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1518 弄'
-              }, {
-                date: '2016-05-04',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1518 弄'
-              }, {
-                date: '2016-05-01',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1518 弄'
-              }, {
-                date: '2016-05-08',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1518 弄'
-              }, {
-                date: '2016-05-06',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1518 弄'
-              }, {
-                date: '2016-05-07',
+                fanc: 'https://pic4.zhimg.com/80/v2-aa2d1badd74884f7f876d61076a8f4b0_1440w.jpg',
                 name: '王小虎',
                 address: '上海市普陀区金沙江路 1518 弄'
               }],
               multipleSelection: [],
             
-            eleList: [
-                
-            ],
+            eleList: [],
             show: false,
             imgShow: false,
             isImage: true,
@@ -104,7 +82,7 @@ export default  {
 
                 'width': '105', // 宽度
                 'height': '105', // 高度
-                varName: '', // 变量名
+                'varName': '', // 变量名
             },
 
             varName: '',
@@ -119,13 +97,26 @@ export default  {
             presetLine: [{ type: 'l', site: 50 }, { type: 'v', site: 50 }],
             aaa: true,
             tc: '',
-            curElem: ''
+            curElem: '',
         }
     },
     methods: {
+        // 选中单行
+        rowClick(e){
+            console.log(e)
+            for(let i in e){
+                if(i == 'fans'){
+                    $('.' + i).css('background-image', 'url('+ e[i] +')')
+                } else {
+                    $('.' + i).text(e[i])
+                }
+            }
+        },
         // 元素列表 - 选中的元素
-        selectDom(item){
+        selectDom(item, idx){
             console.log(item.dom)
+            this.eleList.filter( (i, index) => idx == index ? i.select = true : i.select = false )
+
             item.dom.click()
         },
         toggleSelection(rows) {
@@ -145,30 +136,64 @@ export default  {
             this.model.bgcolor = e
         },
         switchTab:function(idx){ 
-            var box = document.querySelector('.box'),
-                none = document.querySelectorAll('.invite-text-box-border')
-
-            // 数据填充
-            if(idx == 1){
-                console.dir(box.parentNode.innerHTML)
-
-                // 将元素选中提示 隐藏
-                for(let i of none){
-                    i.style.display = 'none'
-                }
-                // none.map(item => item.style.display = 'none')
-                
+            var box = document.querySelector('.box')
                 this.tc = box.parentNode.innerHTML
 
-                // 模板制作
+            
+                setTimeout(() => {
+                    var none = document.querySelectorAll('.i-t-b-border')
+                    console.log(none)
+                    // 数据填充
+                    if(idx == 1){
+                    this.eleList.filter( (item, index) => {
+                        if(item.varName) {
+                            console.log(item)
+                            // 图片相关 - 删除图片地址
+                            if(item.varName == 'fans'){
+                                item.dom.style.backgroundImage = ''
+                                // 文本相关 - 删除文本内容
+                            } else {
+                                
+                            }
+                        }
+
+                        // console.dir(item.dom.innerHTML)
+                        // 去除 '双击选择图片' '点击这里编辑' 字样
+                        if(item.dom.innerText == '双击选择图片'){
+                            var lang = this.eleList.length
+                            console.log(index, document.querySelectorAll('.invite-text-box .tip'), lang)
+                            document.querySelectorAll('.invite-text-box .tip')[index + lang].style.opacity = 0
+                        }
+                    })
+
+                    // 将元素选中提示 隐藏
+                    for(let i of none){
+                        i.style.display = 'none'
+                    }
+                    // none.map(item => item.style.display = 'none')
+                    // 模板制作
             } else if(idx == 0){
                 // none.map(item => item.style.display = 'block')
+                var leng = document.querySelectorAll('.tip')
+                for(let i of leng){
+                    i.style.opacity = 1
+                }
+
                 for(let i of none){
                     i.style.display = 'block'
                 }
+                
             }
             // return 
             this.headerTag.map((item, index) => index == idx ? item.select = true : item.select = false)
+            // 关闭弹框
+            this.imgShow = false
+
+                }, 500)
+
+            
+
+            
         },
         // 图片移动
         imgDrag: function(event) {
@@ -514,15 +539,26 @@ export default  {
 
         // 变量名
         "defaultStyle.varName": function(val) {
+            // 更新数据
             this.varName = val
             this.defaultStyle.varName = val
-            console.log(this.defaultStyle, this.tNode)
-            this.tNode.dataset.cont = val
+            console.log(this.defaultStyle, this.tNode, val)
+            
+            if(!val) return
+            // 记录数据 保存 添加变量名的dom
+            this.eleList.filter( item => item.name == this.tNode.eleListName ? item.varName = val : '') 
+            
+            // 在选中的dom 增加class 属性值
+            this.tNode.classList.add(val)
         },
         "varName": function(val) {
+            // 更新数据
             this.defaultStyle.varName = val
-            console.log(this.defaultStyle, this.tNode)
-            this.tNode.dataset.cont = val
+            console.log(this.defaultStyle, this.tNode, val)
+            
+            if(!val) return
+            // 在选中的dom 增加class 属性值
+            this.tNode.classList.add(val)
         },
 
         // 监听图片元素位置大小 宽度 高度 上边距 左边距
