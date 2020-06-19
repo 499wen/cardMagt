@@ -23,7 +23,7 @@ export default  {
                 name: '王小虎',
                 address: '上海市普陀区金沙江路 1518 弄'
               }, {
-                fanc: 'https://pic4.zhimg.com/80/v2-aa2d1badd74884f7f876d61076a8f4b0_1440w.jpg',
+                fans: 'https://pic4.zhimg.com/80/v2-aa2d1badd74884f7f876d61076a8f4b0_1440w.jpg',
                 name: '王小虎',
                 address: '上海市普陀区金沙江路 1518 弄'
               }],
@@ -101,6 +101,26 @@ export default  {
         }
     },
     methods: {
+        // 新建
+        newCreate(){
+            // 删除模板中所有元素
+            var parentDom = document.querySelector('.mask'),
+                html = `
+                <div class="mask-leftTop mask-direction"></div>
+                <div class="mask-leftBottom mask-direction"></div>
+                <div class="mask-rightTop mask-direction"></div>
+                <div class="mask-rightBottom mask-direction"></div>
+                `
+
+            while(parentDom.hasChildNodes()){
+                parentDom.removeChild(parentDom.firstChild)
+            }
+
+            // 将显示出血位的'div'添加进'parentDom'中
+            parentDom.insertAdjacentHTML('afterbegin', html)
+
+            console.log(parentDom)
+        },
         // 选中单行
         rowClick(e){
             console.log(e)
@@ -138,33 +158,47 @@ export default  {
         switchTab:function(idx){ 
             var box = document.querySelector('.box')
                 this.tc = box.parentNode.innerHTML
-
             
-                setTimeout(() => {
-                    var none = document.querySelectorAll('.i-t-b-border')
-                    console.log(none)
-                    // 数据填充
-                    if(idx == 1){
-                    this.eleList.filter( (item, index) => {
-                        if(item.varName) {
-                            console.log(item)
-                            // 图片相关 - 删除图片地址
-                            if(item.varName == 'fans'){
-                                item.dom.style.backgroundImage = ''
-                                // 文本相关 - 删除文本内容
-                            } else {
-                                
-                            }
-                        }
+            setTimeout(() => {
+                // return 
+                this.headerTag.map((item, index) => index == idx ? item.select = true : item.select = false)
+                // 关闭弹框
+                this.imgShow = false
+                
+                // 选中框dom
+                var none = document.querySelectorAll('.i-t-b-border')
 
-                        // console.dir(item.dom.innerHTML)
-                        // 去除 '双击选择图片' '点击这里编辑' 字样
+                console.log(none)
+                // 数据填充
+                if(idx == 1){
+                    this.eleList.filter( (item, index, list) => {
+                        // if(item.varName) {
+                        //     console.log(item)
+                        //     // 图片相关 - 删除图片地址
+                        //     if(item.varName == 'fans'){
+                        //         item.dom.style.backgroundImage = ''
+                        //         // 文本相关 - 删除文本内容
+                        //     } else {
+                                
+                        //     }
+                        // }
+
+                        // 去除 '双击选择图片' 字样  --  选中 fans 属性
                         if(item.dom.innerText == '双击选择图片'){
                             var lang = this.eleList.length
-                            console.log(index, document.querySelectorAll('.invite-text-box .tip'), lang)
-                            document.querySelectorAll('.invite-text-box .tip')[index + lang].style.opacity = 0
+                            console.dir(item.dom)
+                            // 将 '双击选择图片' 隐藏  且 选中属性后选择图片, 将清空地址
+                            item.dom.innerHTML = item.dom.innerHTML.replace('>双击选择图片<', '><')
+                            document.querySelectorAll('.fans')[1].style.backgroundImage = 'url()'
+
+                            console.dir(item.dom)
                         }
                     })
+
+                    // 循环 隐藏 '双击选择图片' '点击这里编辑' 字样
+                    for(let i = 0; i < this.eleList.length; i++) {
+                        document.querySelectorAll('.invite-text-box .tip')[i + this.eleList.length].style.opacity = 0
+                    }
 
                     // 将元素选中提示 隐藏
                     for(let i of none){
@@ -172,28 +206,24 @@ export default  {
                     }
                     // none.map(item => item.style.display = 'none')
                     // 模板制作
-            } else if(idx == 0){
-                // none.map(item => item.style.display = 'block')
-                var leng = document.querySelectorAll('.tip')
-                for(let i of leng){
-                    i.style.opacity = 1
+                } else if(idx == 0){
+                    // none.map(item => item.style.display = 'block')
+                    var leng = document.querySelectorAll('.tip')
+
+                    // 
+                    for(let i of leng){
+                        i.style.opacity = 1
+                    }
+
+                    // 将元素选中提示 显示
+                    for(let i of none){
+                        i.style.display = 'block'
+                    }
+                    
                 }
 
-                for(let i of none){
-                    i.style.display = 'block'
-                }
-                
-            }
-            // return 
-            this.headerTag.map((item, index) => index == idx ? item.select = true : item.select = false)
-            // 关闭弹框
-            this.imgShow = false
+            }, 500)
 
-                }, 500)
-
-            
-
-            
         },
         // 图片移动
         imgDrag: function(event) {
@@ -539,8 +569,12 @@ export default  {
 
         // 变量名
         "defaultStyle.varName": function(val) {
+            // 去重
+            if(val && document.querySelector('.' + val)){
+                document.querySelector('.' + val).classList.remove(val)
+            }
+
             // 更新数据
-            this.varName = val
             this.defaultStyle.varName = val
             console.log(this.defaultStyle, this.tNode, val)
             
@@ -552,6 +586,11 @@ export default  {
             this.tNode.classList.add(val)
         },
         "varName": function(val) {
+            // 去重
+            if(val && document.querySelector('.' + val)){
+                document.querySelector('.' + val).classList.remove(val)
+            }
+            
             // 更新数据
             this.defaultStyle.varName = val
             console.log(this.defaultStyle, this.tNode, val)

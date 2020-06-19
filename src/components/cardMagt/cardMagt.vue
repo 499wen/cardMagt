@@ -14,7 +14,7 @@
              <!-- 上部分 -->
              <div class="model-make-top">
                  <!-- 设置模板长宽属性 -->
-                 <i class="el-icon-s-tools" @click="modelShow = true"></i>
+                 <i class="el-icon-s-tools" @click="modelShow = true; imgShow = false"></i>
              </div>
 
              <div class="model-make-container">
@@ -23,7 +23,7 @@
                      
                     <!-- 新建 -->
                     <ul>
-                        <i class="el-icon-circle-plus-outline fontSize" title="新建"></i>
+                        <i class="el-icon-circle-plus-outline fontSize" @click="newCreate" title="新建"></i>
                     </ul>
 
                     <!-- 图片 -->
@@ -61,6 +61,19 @@
                                 <div class="mask-rightTop mask-direction"></div>
                                 <div class="mask-rightBottom mask-direction"></div>
                             </div>
+                        </div>
+
+                        <!-- 标识模板尺寸 -->
+                        <div 
+                            :style="{
+                                'width': model.width + 'px',
+                                'margin-top': '10px', 
+                                'text-align': 'center',
+                                'font-size': '15px',
+                                'color': '#e2e2e2'
+                            }"
+                        > 
+                            {{ model.width + 'x' + model.height }} 
                         </div>
                     </vue-ruler-tool>
                 </div>
@@ -158,7 +171,7 @@
         <div class="mr20 ml15">
             <div v-show="false" id="textTemplate" class="textTemplate public" style="height:40px;width:60%">
                 <div class="invite-text-box">
-                    <div class="invite-text-box-text edit-text tip">点击这里编辑</div>
+                    <div class="invite-text-box-text edit-text tip">双击更改文本</div>
                     <div class="invite-text-box-border">
                         <div class="invite-text-box-border-container i-t-b-border">
                             <div class="invite-text-box-border top-line move-line">
@@ -665,6 +678,32 @@ export default CardMagt;
     width: 100%;
     height: 100% !important;
 }
+
+    .mask-direction {
+        position: absolute;
+        border: 1px solid red;
+        width: 800px;
+        height: 800px;
+    }
+
+    .mask-leftTop {
+        right: calc(100%);
+        bottom: calc(100%);
+    }
+
+    .mask-leftBottom {
+        right: calc(100%);
+        top: calc(100%);
+    }
+
+    .mask-rightTop {
+        left: calc(100%);
+        bottom: calc(100%);
+    }
+    .mask-rightBottom {
+        left: calc(100%);
+        top: calc(100%);
+    }
 </style>
 
 <style lang="less" scoped>

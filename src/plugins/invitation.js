@@ -203,6 +203,7 @@ export function drop(event, _this) {
 	// 给控件绑定鼠标按下的事件
 	$(node).dblclick( function (e){
 		_this.imgShow = true
+		_this.modelShow = false
 		console.log(defaultStyle)
 	})
 
@@ -222,6 +223,7 @@ export function drop(event, _this) {
 		let s = trans.split(',');
 		nodeWidth = $(this).css('width').replace('px', '') - 0;
 		nodeHeight = $(this).css('height').replace('px', '') - 0
+		console.log(node)
 		console.log(nodeWidth, nodeHeight)
 		nodeX = s[4] - 0
 		nodeY = s[5].substr(0, s[5].length - 1) - 0
