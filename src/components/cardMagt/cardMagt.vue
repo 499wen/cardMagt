@@ -6,7 +6,7 @@
                 :class="['nav-single', item.select && 'nav-select']" 
                 v-for="(item, idx) in headerTag" :key="idx"
                 @click.self="switchTab(idx)"
-            > {{ item.name }} </span> 
+            > {{ item.name }} </span>  
         </div>
 
         <!-- 模板制作 -->
@@ -30,7 +30,7 @@
                     <ul class="pl20 verson" draggable="true" @dragstart="imgDrag($event)" @dragover="imgDragover($event)" style=" z-index: 11">
                         <img class="invittext" src="../../../public/static/images/invitimages.png" title="拖拽到手机进行编辑" />
                     </ul>
-    
+     
                     <!-- 文本 -->
                     <ul class="verson text-area" draggable="true" @dragstart="textDrag($event)" @dragover="textDragover($event)" style="padding-left:0px;">
                         <img class="invittext" src="../../../public/static/images/invittext.png" title="拖拽到手机进行编辑" />
@@ -137,7 +137,7 @@
         <div v-show="false" id="imageTemplate" class="imageTemplate public" :style="{'height': '105px', 'width': '105px'}">
             <div class="invite-text-box">
                 <div class="invite-text-box-text">
-                    <div class="tip a1">双击选择图片</div>
+                    <div class="tip">双击选择图片</div>
                 </div>
                 <div class="invite-text-box-border i-t-b-border">
                     <div class="invite-text-box-border-container">

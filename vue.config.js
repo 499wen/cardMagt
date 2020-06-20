@@ -6,12 +6,11 @@
 //   },
 // }
   
-
 module.exports = {
   lintOnSave: false,
   filenameHashing: false,
   productionSourceMap:false,
-  publicPath: '/',
+  publicPath: '/documentManagement',
   devServer: {
     port: 8765,     // 端口
     disableHostCheck: true,
