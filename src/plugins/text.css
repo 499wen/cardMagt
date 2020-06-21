@@ -9,6 +9,10 @@
     height: 100%;
 }
 
+.textTemplate {
+    z-index: 5;
+}
+
 .invite-text-box-text{
     /* margin: 5px; */
     width: 100%;

@@ -31,11 +31,37 @@ ul, li {
     .nav-single {
         margin-right: 10px;
         cursor: pointer;
-        height: 2.9375rem;
+        height: 2.8125rem;
         border-bottom: 2px solid transparent;
     }
 
     .nav-select {
+        color: #409eff;
+        border-bottom: 2px solid #409eff;
+    }
+} 
+
+.function {
+    width: 100%;
+    box-sizing: border-box;
+    height: 2.8125rem;
+    line-height: 2.8125rem;
+    border-bottom: 2px solid #ccc;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #333;
+    font-size: 14px;
+    margin-bottom: 10px;
+
+    .fun-single {
+        margin-right: 10px;
+        cursor: pointer;
+        height: 2.8125rem;
+        border-bottom: 2px solid transparent;
+    }
+
+    .fun-select {
         color: #409eff;
         border-bottom: 2px solid #409eff;
     }
@@ -107,6 +133,9 @@ ul, li {
             width: 200px;
             height: 100%;
             box-sizing: border-box;
+            display: flex;
+            align-items: flex-start;
+            
 
             .ele-list {
                 width: 100%;
@@ -195,18 +224,19 @@ ul, li {
     .mask-box {
         z-index: 20;
         position: fixed;
-        top: 50%;
+        top: 56%;
         margin-top: -21.25rem;
-        left: 50%;
+        left: 62%;
         margin-left: -12.1875rem;
         width: 390px;
-        height: 600px;
+        height:470px;
         box-shadow: 1px 1px 5px 1px #ccc;
         border-radius: 3px;
         background-color: #fff;
         padding: 10px;
         box-sizing: border-box;
         overflow-y: auto;
+        overflow-x: hidden;
         display: flex;
         flex-wrap: wrap;
         flex-direction: column;
@@ -249,6 +279,7 @@ ul, li {
                     padding-bottom: 10px;
                     border-bottom: 1px solid #ccc;
 
+                    
                     span {
                         width: 70px;
                         text-align: right;
@@ -264,6 +295,11 @@ ul, li {
                         
                     }
                 }
+
+                .model-single:nth-last-child(1) {
+                    padding-bottom: 0;
+                    border: none;
+                }
             }
         }
     }
@@ -275,6 +311,7 @@ ul, li {
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
+    font-size: 14px;
 
     li {
         width: 50%;
@@ -311,7 +348,7 @@ ul, li {
     display: flex;
     justify-content: center;
     flex: 1;
-    overflow-y: auto;
+    // overflow-y: auto;
 }
 
 // 供选的字体颜色与背景颜色

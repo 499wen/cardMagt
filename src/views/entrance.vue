@@ -1,12 +1,12 @@
 <template>
     <div class="entrance">
         <!-- 左侧 - 导航栏 -->
-        <!-- <AppLeft></AppLeft> -->
+        <AppLeft></AppLeft>
 
         <!-- 右侧 -->
         <div class="right">
             <!-- 右侧顶部 - 信息栏 -->
-            <!-- <AppRight></AppRight> -->
+            <AppRight></AppRight>
 
             <!-- 右侧 - 主体 -->
             <router-view />

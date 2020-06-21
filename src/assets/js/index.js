@@ -12,8 +12,15 @@ import {
     imageDrag,
     imageDragover
 } from "@/plugins/invitation.js";
+// import { map } from 'core-js/fn/array';
 
 var token = localStorage.getItem("token") || 'asdfghjklzxcvbndfgherghjkcvb123456'
+
+var arrVarName = new Map()
+arrVarName.set('fans', '头像')
+arrVarName.set('name', '姓名')
+arrVarName.set('phone', '手机')
+arrVarName.set('address', '地址')
 
 export default  {
     data() { 
@@ -94,13 +101,25 @@ export default  {
                 {label: '数据填充', name: '数据填充', select: false},
                 // {label: '导出', name: '导出', select: false},
             ],
+            funTag: [
+                {label: '位置大小', name: '位置大小', select: true},
+                {label: '基本设置', name: '基本设置', select: false},
+                {label: '边框样式', name: '边框样式', select: false},
+                {label: '阴影样式', name: '阴影样式', select: false},
+            ],
             presetLine: [{ type: 'l', site: 50 }, { type: 'v', site: 50 }],
             aaa: true,
             tc: '',
             curElem: '',
+
+            arrVarName, // 储存属性 map类型 {'fans' => '头像'}
         }
     },
     methods: {
+        // 设置层级
+        setTop(num){
+            this.defaultStyle.hierarchy = num
+        },
         // 新建
         newCreate(){
             // 删除模板中所有元素
@@ -155,6 +174,10 @@ export default  {
         colorSelect(e){
             this.model.bgcolor = e
         },
+        switchFun: function(idx) {
+            this.funTag.map((item, index) => index == idx ? item.select = true : item.select = false)
+        },
+        // 切换头部导航
         switchTab:function(idx){ 
             var box = document.querySelector('.box')
                 this.tc = box.parentNode.innerHTML
@@ -574,13 +597,17 @@ export default  {
                 document.querySelector('.' + val).classList.remove(val)
             }
 
+
             // 更新数据
             this.defaultStyle.varName = val
             console.log(this.defaultStyle, this.tNode, val)
             
             if(!val) return
+            // 修改元素列表的文本提示
+            this.eleList.filter(item => item.nodeKey == this.tNode.eleListName ? item.name = val : '')
+
             // 记录数据 保存 添加变量名的dom
-            this.eleList.filter( item => item.name == this.tNode.eleListName ? item.varName = val : '') 
+            this.eleList.filter( item => item.nodeKey == this.tNode.eleListName ? item.name = val : '') 
             
             // 在选中的dom 增加class 属性值
             this.tNode.classList.add(val)

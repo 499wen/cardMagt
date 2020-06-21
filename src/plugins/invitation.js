@@ -155,6 +155,7 @@ export function drop(event, _this) {
 	// 将创建的元素 保存eleList 数组中
 	_this.eleList.push({
 		name: _this.curElem + (+num + 1),
+		nodeKey: _this.curElem + (+num + 1),
 		dom: node,
 		tips: _this.curElem,
 		select: true
@@ -165,15 +166,14 @@ export function drop(event, _this) {
 
 	console.log('eleList === ', _this.eleList)
 	console.log(node)
-
 	// 把控件保存起来
 	nodes.set(node.id, node)
 	
 	// 给控件绑定点击事件
 	$(node).click(function(e) {
-		console.log($(this), _this)
 		e.stopPropagation()
 		e.preventDefault()
+		console.log($(this), _this)
 		hideBox()
 		$(this).find('.invite-text-box-border').css('display', 'block')
 		$(this).find('.btn-upload').css('display', 'block')
@@ -182,6 +182,9 @@ export function drop(event, _this) {
 			$(".check").removeClass("check")
 			$("#" +'itemId'+ node.id).addClass("check");
 		}
+		// 点击元素后  匹配dom.eleListName 与 vue.eleList.nodeKey
+		// _this.eleList.filter((item, idx) => item.nodeKey == node.eleListName ? item.select = true : item.select = false)
+
 		// return 
 		if(_this.activeName.length === 0){
 			_this.activeName.push("1")
@@ -214,6 +217,7 @@ export function drop(event, _this) {
 			// moveMethod='topResize'
 			return
 		}
+
 		mouseIsDown = true;
 		currentNode = this;
 		mouseX = e.pageX;
