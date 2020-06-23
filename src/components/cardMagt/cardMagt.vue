@@ -18,7 +18,7 @@
 
              <div class="model-make-container">
                 <!-- 左侧部分 -->
-                <div class="model-make-left">
+                <div class="model-make-left">   
                      
                     <!-- 新建 -->
                     <ul>
@@ -39,6 +39,15 @@
                         <img class="invittext" src="../../../public/static/images/invittext.png" title="拖拽到模板进行编辑" />
                     </ul>
 
+                    <!-- 选择模板 -->
+                    <ul>
+                        <i class="el-icon-postcard fontSize" @click="openModel" title="选择模板"></i>
+                    </ul>
+
+                    <!-- 保存 -->
+                    <ul v-if="eleList.length">
+                        <i class="el-icon-discount fontSize" @click="preservation" title="保存模板"></i>
+                    </ul>
                 </div>
 
                 <!-- 中间部分 -->
@@ -49,10 +58,11 @@
                         :is-scale-revise="true" 
                         :preset-line="presetLine"
                     >   
-                        <div class="box" 
+                        <div class="box" id="box"
                             :style="{'width': model.width + 'px', 'height': model.height + 'px', 'padding': model.bleedingSite + 'px', 'background-color': model.bgcolor, 'boxSizing': 'border-box'}"
                         >
                             <div 
+                                v-if="!edit_mo"
                                 class="mask phone-item" 
                                 @drop="dropTest($event)" @dragover="allowDrop($event)"
                                 
@@ -63,6 +73,15 @@
                                 <div class="mask-leftBottom mask-direction"></div>
                                 <div class="mask-rightTop mask-direction"></div>
                                 <div class="mask-rightBottom mask-direction"></div>
+                            </div>
+
+                            <div 
+                                v-else 
+                                v-html="editTc"
+                                class="mask phone-item" 
+                                @drop="dropTest($event)" @dragover="allowDrop($event)"
+                                
+                            >
                             </div>
                         </div>
 
@@ -182,17 +201,11 @@
                                                 <span class="style_label mr10" style=" letter-spacing: 6px; margin-right: 20px;">变量名</span>
 
                                                 <!-- 判断是否已存在 值 -->
-                                                <el-select v-if="defaultStyle.varName" v-model="defaultStyle.varName" class="option" size="mini" style="margin-left: -10px;width:97px;">
-                                                        <el-option value="fans" label="头像"></el-option>
+                                                <el-select v-model="defaultStyle.varName" class="option" size="mini" style="margin-left: -10px;width:97px;">
+                                                        <!-- <el-option value="fans" label="头像"></el-option> -->
                                                         <el-option value="name" label="姓名"></el-option>
                                                         <el-option value="phone" label="手机"></el-option>
-                                                        <el-option value="address" label="地址"></el-option>
-                                                </el-select>
-                                                <el-select v-else v-model="varName" class="option" size="mini" style="margin-left: -10px;width:97px;">
-                                                        <el-option value="fans" label="头像"></el-option>
-                                                        <el-option value="name" label="姓名"></el-option>
-                                                        <el-option value="phone" label="手机"></el-option>
-                                                        <el-option value="address" label="地址"></el-option>
+                                                        <!-- <el-option value="address" label="地址"></el-option> -->
                                                 </el-select>
                                         </div>
                                         <div class="flex invite-progress">
@@ -281,7 +294,7 @@
                                     <div v-if="isImage">
                                         <!--   /api/filecenter/file/file :headers="headers"  -->
                                         <el-upload class="upload-demo" drag action="https://jsonplaceholder.typicode.com/posts/" :on-success="uploadImage" ref="elupload"
-                                            accept="image/*" :on-change="imgFile" :show-file-list="false">
+                                            accept="image/*" :on-change="imgFile" :headers="headers" :show-file-list="false">
                                             <i class="el-icon-upload"></i>
                                             <div class="el-upload__text">
                                                 将图片拖到此处，或
@@ -305,10 +318,10 @@
                                                 <span class="style_label mr10" style=" letter-spacing: 6px;margin-right: 20px;">变量名</span>
                                                 <!-- 判断是否已存在 值 v-if="defaultStyle.varName" -->
                                                 <el-select  v-model="defaultStyle.varName" class="option" size="mini" style="margin-left: -10px;width:97px;">
-                                                        <el-option value="fans" label="头像"></el-option>
+                                                        <!-- <el-option value="fans" label="头像"></el-option> -->
                                                         <el-option value="name" label="姓名"></el-option>
                                                         <el-option value="phone" label="手机"></el-option>
-                                                        <el-option value="address" label="地址"></el-option>
+                                                        <el-option value="sex" label="性别"></el-option>
                                                 </el-select>
                                                 <!-- <el-select v-else v-model="varName" class="option" size="mini" style="margin-left: -10px;width:97px;">
                                                         <el-option value="fans" label="头像"></el-option>
@@ -428,6 +441,7 @@
                         <div class="ele-list">元素列表</div>
                         <div class="ele-single">
                             <div v-for="(item, idx) in eleList" :key="idx">
+                                
                                 <el-button v-if="item.select" type="primary" size="mini" @click="selectDom(item, idx)">{{ arrVarName.get(item.name) || item.name }}</el-button>
                                 <el-button v-else size="mini" @click="selectDom(item, idx)">{{ arrVarName.get(item.name) || item.name }}</el-button>
                             </div>
@@ -440,7 +454,7 @@
 
         <!-- 数据填充 -->
         <div v-show="headerTag[1].select" class="model-make" style="display: flex">
-            <div class="model-make-center" style="width: 500px">
+            <div class="model-make-center" style="width: 65%">
                 <vue-ruler-tool
                     :content-layout="{left: 0,top: 0}"
                     :is-scale-revise="true"
@@ -451,32 +465,50 @@
                     <div v-html="tc"></div>
                 </vue-ruler-tool>
             </div>
+            
+            <div class="" style="width: 35%; height: 100%; text-align: center">
+                <!-- 表格 -->
+                <div class="table" >
+                    <el-table
+                        ref="multipleTable"
+                        :data="tableData"
+                        tooltip-effect="dark"
+                        style=" height: 100%; overflow-x: auto"
+                        border
+                        @selection-change="handleSelectionChange"
+                        @row-click='rowClick'
+                    >
 
-            <!-- 表格 -->
-            <div class="table" >
-                <el-table
-                    ref="multipleTable"
-                    :data="tableData"
-                    tooltip-effect="dark"
-                    style="width: 100%"
-                    border
-                    @selection-change="handleSelectionChange"
-                    @row-click='rowClick'
-                >
+                        <el-table-column align="center" type="selection" width="40"></el-table-column>
 
-                    <el-table-column align="center" type="selection" width="55"></el-table-column>
+                        <el-table-column
+                            align="center"
+                            :label="item.name" :width="''" :prop="item.scription"
+                            v-for="(item, idx) in tableCate" :key="idx"
+                        >
+                            <template slot-scope="scope">
+                                <div v-if="item.scription == 'photoFileId'">
+                                    <img :src="'/api/filecenter/file/file/'+ scope.row[item.scription]" width="30" height='30'/>
+                                </div>
+                                <div v-else>{{ scope.row[item.scription] }}</div>
+                            </template>
+                        </el-table-column>
 
-                    <el-table-column align="center" prop="name" label="姓名" width=""> </el-table-column>
-                    <el-table-column align="center" label="日期" width="">
-                        <template slot-scope="scope">
-                            <div>
-                                <img :src="scope.row.fans" width="60" height='60'/>
-                            </div>
-                        </template>
-                    </el-table-column>
-
-                </el-table>
-
+                    </el-table>
+                </div>
+                <div class="page">
+                    <el-pagination
+                        background
+                        size='mini'
+                        @size-change="handleSizeChange"
+                        @current-change="handleCurrentChange"
+                        :current-page="currentPage"
+                        :page-sizes="[30, 60, 90]"
+                        :page-size="pageSize"
+                        layout="total, prev, pager, next"
+                        :total="total">
+                    </el-pagination>
+                </div> 
             </div>
         </div>
 
@@ -566,24 +598,24 @@
                             @click.self="switchFun(idx)"
                         > {{ item.name }} </span>  
                     </div>
-                    <div v-if="funTag[0].select">
+                    <div v-if="false">
                         <!-- 文本 -->
                         <ul class="position" v-if="!isImage">
                             <li>
-                                <span>左边距</span>
+                                <span style="letter-spacing: 5px;">左边距</span>
                                 <el-input size='mini' v-model="text.paddingL"> </el-input>
                             </li>
                             <li>
-                                <span>上边距</span>
+                                <span style="letter-spacing: 5px;">上边距</span>
                                 <el-input size='mini' v-model="text.paddingT"> </el-input>
                             </li>
                             <li>
                                 <span>高度</span>
-                                <el-input size='mini' v-model="text.height"> </el-input>
+                                <el-input style="margin-left: -17px;" size='mini' v-model="text.height"> </el-input>
                             </li>
                             <li>
                                 <span>宽度</span>
-                                <el-input size='mini' v-model="text.width"> </el-input>
+                                <el-input size='mini' style="margin-left: -17px;" v-model="text.width"> </el-input>
                             </li>
                         </ul>
                         <!-- 图片 -->
@@ -598,17 +630,43 @@
                             </li>
                             <li>
                                 <span>高度</span>
-                                <el-input size='mini' v-model="img.height"> </el-input>
+                                <el-input size='mini' style="margin-left: -17px;" v-model="img.height"> </el-input>
                             </li>
                             <li>
                                 <span>宽度</span>
-                                <el-input size='mini' v-model="img.width"> </el-input>
+                                <el-input size='mini' style="margin-left: -17px;" v-model="img.width"> </el-input>
                             </li>
                         </ul>
                     </div>
-                    <div  v-if="funTag[1].select">
+                    <div  v-if="funTag[0].select">
                         <div class="layui-colla-content layui-show">
                             <div v-if="!isImage">
+                                <ul class="position" >
+                                    <li>
+                                        <span style="letter-spacing: 5px;">左边距</span>
+                                        <el-input size='mini' style="width: 97px" v-model="text.paddingL"> </el-input>
+                                    </li>
+                                    <li>
+                                        <span style="letter-spacing: 5px;">上边距</span>
+                                        <el-input size='mini' style="width: 97px" v-model="text.paddingT"> </el-input>
+                                    </li>
+                                    <li>
+                                        <span>高度</span>
+                                        <el-input size='mini' style="width: 97px;margin-left: -20px;" v-model="text.height"> </el-input>
+                                    </li>
+                                    <li>
+                                        <span>宽度</span>
+                                        <el-input size='mini' style="width: 97px;margin-left: -20px;" v-model="text.width"> </el-input>
+                                    </li>
+                                </ul>
+                                <!-- <div class="set-cte">
+                                    <span style="">内容</span>
+                                    <el-input v-model="defaultStyle.cte" size="mini" placeholder="设置文本内容"></el-input>
+                                </div> -->
+                                <div style="float:left;letter-spacing: 25px;margin-bottom: 10px">
+                                    <span>内容</span>
+                                    <el-input style="width: 285px; margin-left: -10px" v-model="defaultStyle.cte" size="mini" placeholder="设置文本内容"></el-input>
+                                </div>
                                 <div class="mb10 clear_float" style="text-align: left">
                                     <div style="float:left;letter-spacing: 25px;">
                                         <span>字体</span>
@@ -639,9 +697,10 @@
                                             <span class="style_label mr10" style=" letter-spacing: 6px;margin-right: 20px;">变量名</span>
                                             <!-- 判断是否已存在 值 v-if="defaultStyle.varName" -->
                                             <el-select  v-model="defaultStyle.varName" class="option" size="mini" style="margin-left: -10px;width:97px;">
-                                                    <el-option value="name" label="姓名"></el-option>
+                                                    <el-option value="userName" label="姓名"></el-option>
                                                     <el-option value="phone" label="手机"></el-option>
-                                                    <el-option value="address" label="地址"></el-option>
+                                                    <el-option value="sex" label="性别"></el-option>
+                                                    <!-- <el-option value="address" label="地址"></el-option> -->
                                             </el-select>
                                     </div>
                                     <div class="flex invite-progress">
@@ -751,9 +810,27 @@
                                 </div>
                             </div>
                             <div v-if="isImage">
+                                <ul class="position">
+                                    <li>
+                                        <span style="letter-spacing: 5px;">左边距</span>
+                                        <el-input size='mini' style="width: 97px" v-model="img.paddingL"> </el-input>
+                                    </li>
+                                    <li>
+                                        <span style="letter-spacing: 5px;">上边距</span>
+                                        <el-input size='mini' style="width: 97px" v-model="img.paddingT"> </el-input>
+                                    </li>
+                                    <li>
+                                        <span>高度</span>
+                                        <el-input size='mini' style="width: 97px;margin-left: -20px;" v-model="img.height"> </el-input>
+                                    </li>
+                                    <li>
+                                        <span>宽度</span>
+                                        <el-input size='mini' style="width: 97px;margin-left: -20px;" v-model="img.width"> </el-input>
+                                    </li>
+                                </ul>
                                 <!--   /api/filecenter/file/file :headers="headers"  -->
-                                <el-upload class="upload-demo" drag action="https://jsonplaceholder.typicode.com/posts/" :on-success="uploadImage" ref="elupload"
-                                    accept="image/*" :on-change="imgFile" :show-file-list="false">
+                                <el-upload class="upload-demo" drag action="/api/filecenter/file/file" :on-success="uploadImage" ref="elupload"
+                                    accept="image/*" :headers="headers"  :show-file-list="false">
                                     <i class="el-icon-upload"></i>
                                     <div class="el-upload__text">
                                         将图片拖到此处，或
@@ -790,7 +867,7 @@
                                             <span class="style_label mr10" style=" letter-spacing: 6px;margin-right: 20px;">变量名</span>
                                             <!-- 判断是否已存在 值 v-if="defaultStyle.varName" -->
                                             <el-select  v-model="defaultStyle.varName" class="option" size="mini" style="margin-left: -10px;width:97px;">
-                                                    <el-option value="fans" label="头像"></el-option>
+                                                    <el-option value="photoFileId" label="头像"></el-option>
                                                     <!-- <el-option value="name" label="姓名"></el-option>
                                                     <el-option value="phone" label="手机"></el-option>
                                                     <el-option value="address" label="地址"></el-option> -->
@@ -806,7 +883,7 @@
                             </div>
                         </div>
                     </div>
-                    <div  v-if="funTag[2].select">
+                    <div  v-if="funTag[1].select">
                         <div class="layui-colla-content">
                             <div class="flex invite-progress" style="align-items: flex-start">
                                 <span class="style_label mr10" style=" letter-spacing: 25px;">颜色</span>
@@ -851,7 +928,7 @@
 
                         </div>
                     </div>
-                    <div  v-if="funTag[3].select">
+                    <div  v-if="funTag[2].select">
                         <div class="layui-colla-content">
                             <div class="flex invite-progress">
                                 <span class="mr15 style_label" style=" letter-spacing: 25px;">大小</span>
@@ -901,10 +978,10 @@
         </div>
         <!-- </div> -->
         <!-- 图片双击后 修改弹框 end -->
-
+ 
         <!-- 模板功能 - start -->
         <!-- <div class="musk" v-show="modelShow"> -->
-        <div class="mask-box" v-show="modelShow" style="height: 520px">
+        <div class="mask-box" v-show="modelShow" style="height: 565px">
             <!-- 关闭 -->
             <div class="close">
                 <i class="el-icon-close" @click="modelShow = false" style="cursor: pointer"></i>
@@ -919,18 +996,30 @@
                         <div class="value">
                             <el-input style="width: 80px" size="mini" v-model="model.width"></el-input>
                         </div>
+                        <span>毫米(mm)</span>
                     </li>
                     <li class="model-single">
                         <span>高度:</span>
                         <div class="value">
                             <el-input style="width: 80px" size="mini" v-model="model.height"></el-input>
                         </div>
+                        <span>毫米(mm)</span>
                     </li>
                     <li class="model-single">
                         <span>出血位:</span>
                         <div class="value">
                             <el-input style="width: 80px" size="mini" v-model="model.bleedingSite"></el-input>
                         </div>
+                    </li>
+                    <li class="model-single">
+                        <span>缩放比例:</span>
+                        <el-select v-model="lb" class="option" size="mini" style="margin-left: -5px;width:97px;">
+                                <el-option value="50%" label="50%"></el-option>
+                                <el-option value="75%" label="75%"></el-option>
+                                <el-option value="100%" label="100%"></el-option>
+                                <el-option value="125%" label="125%"></el-option>
+                                <el-option value="150%" label="150%"></el-option>
+                        </el-select>
                     </li>
                     <li class="model-single" style="align-items: flex-start">
                         <span>背景颜色:</span>
@@ -953,8 +1042,8 @@
                     <li class="model-single" style="align-items: flex-start; flex-wrap: wrap;">
                         <span>背景图片:</span>
                         <div class="value">
-                            <el-upload class="upload-demo" drag action="https://jsonplaceholder.typicode.com/posts/" :on-success="uploadImageModel" ref="elupload"
-                                accept="image/*" :on-change="imgFileModel" :on-preview='preview' :show-file-list="false">
+                            <el-upload class="upload-demo" drag action="/api/filecenter/file/file" :on-success="uploadImageModel" ref="elupload"
+                                accept="image/*" :on-change="imgFileModel" :headers='headers' :on-preview='preview' :show-file-list="false">
                                 <i class="el-icon-upload"></i>
                                 <div class="el-upload__text">
                                     将图片拖到此处，或
@@ -968,6 +1057,24 @@
         </div>
         <!-- </div> -->
         <!-- 模板功能 - end -->
+
+        <!-- 测试模板 -->
+        <div class="test-model" v-if="modelBox">
+            <div class="t-m-box">
+                <div
+                 :class="['t-m-single', item.select && ' t-m-select']" v-html="item.content" 
+                 v-for="(item, idx) in model__" :key="idx"
+                 @click="switchTm(idx)"
+                ></div>
+            
+                <div class="btn-width">
+                    <el-button @click="delModel" v-if="haveHave">删除</el-button>
+                    <el-button v-if="haveHave" @click="editModel">编辑</el-button>
+                    <el-button @click="modelBox = false">关闭</el-button>
+                </div>
+            </div>
+
+        </div>
 
     </div>
 </template>
@@ -1026,31 +1133,40 @@ export default CardMagt;
     height: 100% !important;
 }
 
-    .mask-direction {
-        position: absolute;
-        border: 1px solid red;
-        width: 800px;
-        height: 800px;
-    }
+.mask-direction {
+    position: absolute;
+    border: 1px solid red;
+    width: 800px;
+    height: 800px;
+}
 
-    .mask-leftTop {
-        right: calc(100%);
-        bottom: calc(100%);
-    }
+.mask-leftTop {
+    right: calc(100%);
+    bottom: calc(100%);
+}
 
-    .mask-leftBottom {
-        right: calc(100%);
-        top: calc(100%);
-    }
+.mask-leftBottom {
+    right: calc(100%);
+    top: calc(100%);
+}
 
-    .mask-rightTop {
-        left: calc(100%);
-        bottom: calc(100%);
-    }
-    .mask-rightBottom {
-        left: calc(100%);
-        top: calc(100%);
-    }
+.mask-rightTop {
+    left: calc(100%);
+    bottom: calc(100%);
+}
+.mask-rightBottom {
+    left: calc(100%);
+    top: calc(100%);
+}
+
+.el-select .el-input {
+    width: 100% !important;
+}
+/* .el-table__body-wrapper  {
+    overflow-y: scroll !important;
+    overflow-x: hidden !important;
+} */
+
 </style>
 
 <style lang="less" scoped>

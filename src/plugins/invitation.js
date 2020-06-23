@@ -12,15 +12,15 @@ let nodeY = 0;
 let nodeWidth;
 let nodeHeight;
 let nodeNum = 0
-
+ 
 let moveMethod; 
 
 
 import $ from 'jquery'
-
+ 
 window.allowDrop = function(event) {
 	event.preventDefault();
-}
+} 
 
 function textDrag(event) { 
 	event = event || window.event
@@ -108,6 +108,8 @@ export function drop(event, _this) {
 					'translateY': '',
 
 					'varName': '', // 变量名
+					'cte': '', // 文本内容
+					'defaultCte': '双击更改文本' // 默认内容  /  上一次数据
 	}
 
 	var mask = document.querySelector('.mask'),
@@ -150,8 +152,19 @@ export function drop(event, _this) {
 
 	let num = _this.eleList.filter( item => item.tips == _this.curElem && item ).length
 
-	// 去除其它的选中
-	_this.eleList.filter(item => item.select = false)
+	// 去除其它的选中 "photoFileId"
+	var varArr = ['photoFileId','userName','phone','sex']
+	_this.eleList = _this.eleList.map(item => {
+		console.log(item.name, varArr.includes(item.name))
+		if(varArr.includes(item.name)){
+			item.select = true
+		} else {
+			item.select = false
+		}
+
+		return item
+	})
+	console.log(_this.eleList)
 	// 将创建的元素 保存eleList 数组中
 	_this.eleList.push({
 		name: _this.curElem + (+num + 1),
@@ -162,7 +175,7 @@ export function drop(event, _this) {
 	})
 
 	// 用作 选中元素时 的判断
-	node.eleListName = _this.curElem + (+num + 1)
+	node.dataset.cont = _this.curElem + (+num + 1)
 
 	console.log('eleList === ', _this.eleList)
 	console.log(node)
@@ -171,6 +184,7 @@ export function drop(event, _this) {
 	
 	// 给控件绑定点击事件
 	$(node).click(function(e) {
+		console.log('click')
 		e.stopPropagation()
 		e.preventDefault()
 		console.log($(this), _this)
@@ -192,6 +206,8 @@ export function drop(event, _this) {
 			 _this.activeName.push("3")
 			}
 		_this.initTemplateCss(this)
+
+		// mous(e)
 		// $('#baseStyle').click();
 	})
 
@@ -210,14 +226,17 @@ export function drop(event, _this) {
 		console.log(defaultStyle)
 	})
 
-
-	$(node).mousedown(function(e) {
+	//鼠标点击
+	$(node).mousedown(function (e) {
+		console.log('mouserdown')
+		e.stopPropagation()
+		e.preventDefault()
 		// 鼠标按下时，初始化当前控件的各项属性
-		if ($(e.target).hasClass('edit-text')) {
-			// moveMethod='topResize'
-			return
-		}
-
+		// if ($(e.target).hasClass('edit-text')) {
+		// 	// moveMethod='topResize'
+		// 	return
+		// }
+		console.log('e.target:', $(e.target), this)
 		mouseIsDown = true;
 		currentNode = this;
 		mouseX = e.pageX;
@@ -257,9 +276,7 @@ export function drop(event, _this) {
 			moveMethod = 'rightBottomResize'
 		}
 
-
-
-	});
+	})
 	//把控件添加到容器内
 	event.target.appendChild(node);
 	// 触发一次控件的点击事件
@@ -271,7 +288,7 @@ export function addSubmitForm(_this) {
 
 	if (!_this.needForm) {
 		//不需要表单
-		let forms = $('#mc').find('.formTemplate');	
+		let forms = $('#box').find('.formTemplate');	
 		for (let i = 0; i < forms.length; i++) {
 			$(forms[i]).remove()
 		}
@@ -280,7 +297,7 @@ export function addSubmitForm(_this) {
 	}
 
 	//需要添加表单，先判断是否己经有表单了，如果有了，按配置变更显示项，否则先添加一下，再按配置变更显示项
-	let forms = $('#mc').find('.formTemplate');
+	let forms = $('#box').find('.formTemplate');
 	if (forms.length >= 1) {
 		//己经存在表单
 		_this.updateSubmitForm(forms[0])
@@ -290,7 +307,7 @@ export function addSubmitForm(_this) {
 	let node = document.getElementById('formTemplate').cloneNode(true)
 	node.id = uuid()
 	$(node).css('display', 'block')
-	$($('#mc').find('.phone-item')[_this.showKey]).append(node);
+	$($('#box').find('.phone-item')[_this.showKey]).append(node);
 	$(node).css('transform', "translate(10px,50px)")
 	initNode(node)
 	_this.updateSubmitForm(node)
@@ -307,15 +324,16 @@ export function initNode(node, _this,text) {
 			 idMap.set(node.id,_this.showKey)
 			 
 		}
-
-	nodes.set($(node).attr('id'), node)
+	
+		console.log(node)
+	nodes.set($(node).attr('id'), node) 
 	
 	$(node).click(function(e) {
 		e.stopPropagation()
 		e.preventDefault()
 		hideBox()
-		$(this).find('.invite-text-box-border').css('display', 'block')
-		_this.initTemplateCss(this)
+		$(node).find('.invite-text-box-border').css('display', 'block')
+		_this.initTemplateCss(node)
 		
 		if(_this.activeName.length === 0){
 			_this.activeName.push("1")
@@ -331,10 +349,10 @@ export function initNode(node, _this,text) {
 		// var nodeElement = $("#"+ node.id);
 		// console.log("zzzz",nodeElement.css('color'))
 		// 鼠标按下时，初始化当前控件的各项属性
-		if ($(e.target).hasClass('edit-text')) {
-			// moveMethod='topResize'
-			return
-		}
+		// if ($(e.target).hasClass('edit-text')) {
+		// 	// moveMethod='topResize'
+		// 	return
+		// }
 		console.log("mouseIsDown = " + mouseIsDown)
 		mouseIsDown = true;
 		currentNode = this;
@@ -375,6 +393,12 @@ export function initNode(node, _this,text) {
 		}
 
 	});
+
+		// 给控件绑定鼠标按下的事件
+		$(node).dblclick( function (e){
+			_this.imgShow = true
+			_this.modelShow = false
+		})
 }
 
 function uuid() {
@@ -438,6 +462,7 @@ document.body.onmousemove = function(event) {
 }
 
 function move(moveX, moveY) {
+	// console.log(currentNode)
 	$(currentNode).css('transform', 'translate(' + (nodeX + moveX) + 'px,' + (nodeY + moveY) + 'px)');
 }
 
@@ -454,7 +479,6 @@ function bottomResize(moveX, moveY) {
 		return
 	}
 	$(currentNode).css('height', (nodeHeight + moveY) + 'px')
-	// $(currentNode).css('transform','translate('+(nodeX)+'px,'+(nodeY+moveY)+'px)');
 }
 
 function leftResize(moveX, moveY) {
@@ -471,7 +495,6 @@ function rightResize(moveX, moveY) {
 		return
 	}
 	$(currentNode).css('width', (nodeWidth + moveX) / 300 * 101.5 + '%')
-	// $(currentNode).css('transform','translate('+(nodeX+moveX)+'px,'+(nodeY)+'px)');
 }
 
 export {
