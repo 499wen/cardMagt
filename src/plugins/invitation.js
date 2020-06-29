@@ -6,14 +6,15 @@ let nodeStyleMap = new Map(); //所有控件的集合
 let mouseIsDown = false;
 let currentNode;
 let mouseX = 0;
-let mouseY = 0;
+let mouseY = 0; 
 let nodeX = 0; 
 let nodeY = 0;
 let nodeWidth;
 let nodeHeight;
 let nodeNum = 0
- 
+let that = null
 let moveMethod; 
+let x = 0, y = 0
 
 
 import $ from 'jquery'
@@ -34,6 +35,7 @@ export function textDragover(event) {
 }
 
 export function drop(event, _this) {
+	that = _this
 	event = event || window.event
 	console.log(event)
 	event.stopPropagation();
@@ -62,9 +64,11 @@ export function drop(event, _this) {
 	}
 	hideBox()
 	console.log(event)
-	//确定鼠标位置
+	// 确定鼠标位置
 	let x = event.layerX - 80;
 	let y = event.layerY - 20;
+
+
 	console.log("xy = " + x, y)
 	//复制一个文件编辑控件
 
@@ -109,9 +113,18 @@ export function drop(event, _this) {
 
 					'varName': '', // 变量名
 					'cte': '', // 文本内容
-					'defaultCte': '双击更改文本' // 默认内容  /  上一次数据
+					'defaultCte': '双击更改文本', // 默认内容  /  上一次数据
+
+					'x': 0,
+					'y': 0,
+					// 选中元素坐标
+					curEleCoor: {
+						x: Math.floor(x * 10 / 5) / 10,
+						y: Math.floor(y * 10 / 5) / 10
+					},
 	}
 
+	// _this.curEleCoor = {x: Math.floor(x * 10 / 5) / 10, y: Math.floor(y * 10 / 5) / 10}
 	var mask = document.querySelector('.mask'),
 		bigX = mask.offsetWidth, 
 		bigY = mask.offsetHeight, 
@@ -434,25 +447,72 @@ document.body.onmouseup = function(event) {
 	mouseIsDown = false;
 	currentNode = null
 	moveMethod = '';
+
+	var item = nodeStyleMap.get(that.tNode.id)
+	item.x = 0
+	item.y = 0
 }
 
 document.body.onmousemove = function(event) {
-
+	
 	if (!mouseIsDown || !currentNode || $(currentNode).find('.invite-text-box-border').css('display') == 'none') {
 		return
 	}
-
+	var item = nodeStyleMap.get(that.tNode.id)
 	let moveX = event.pageX - mouseX;
 	let moveY = event.pageY - mouseY;
+	// console.log(item.curEleCoor.y, moveY, item.y)
+	
+
+
+	// var chaValY = moveY, chaValX = moveX
+	// that.curEleCoor = {
+	// 	x: that.curEleCoor.x + Math.floor(moveX / 5),
+	// 	y: that.curEleCoor.y + Math.floor(moveY / 5)
+	// }
 	// console.log("move = " +moveX,moveY,(nodeX+moveX),(nodeY+moveY))
 	if (moveMethod == 'move') {
-		console.log("move")
+		// console.log("move")
+
+			// 获取差值
+			if(item.x != moveX){
+				var chaValX = (Math.floor(moveX * 10 / 5) - Math.floor(item.x * 10 / 5)) / 10
+				// console.log('chaValX: ', typeof chaValX, chaValX)
+				
+				
+				item.curEleCoor.x = +item.curEleCoor.x + chaValX.toFixed(1)
+				item.x = moveX
+			} 
+
+			if(item.y != moveY){
+				var chaValY = (Math.floor(moveY * 10 / 5) - Math.floor(item.y * 10 / 5)) / 10
+				// console.log('chaValY: ', typeof chaValY, chaValY)
+
+				item.curEleCoor.y = +item.curEleCoor.y + chaValY.toFixed(1)
+				item.y = moveY
+			}
 		move(moveX, moveY)
 	} else if (moveMethod == 'topResize') {
+		if(item.y != moveY){
+			var chaValY = (Math.floor(moveY * 10 / 5) - Math.floor(item.y * 10 / 5)) / 10
+			console.log('chaValY: ', typeof chaValY, chaValY)
+
+			item.curEleCoor.y = (+item.curEleCoor.y + chaValY).toFixed(1)
+			item.y = moveY
+		} 
 		topResize(moveX, moveY)
 	} else if (moveMethod == 'bottomResize') {
 		bottomResize(moveX, moveY)
 	} else if (moveMethod == 'leftResize') {
+		console.log(moveX, moveY)
+		// 获取差值
+		if(item.x != moveX){
+			var chaValX = (Math.floor(moveX * 10 / 5) - Math.floor(item.x * 10 / 5)) / 10
+			console.log('chaValX: ', typeof chaValX, chaValX)
+
+			item.curEleCoor.x = (+item.curEleCoor.x + chaValX).toFixed(1)
+			item.x = moveX
+		} 
 		leftResize(moveX, moveY)
 	} else if (moveMethod == 'rightResize') {
 		rightResize(moveX, moveY)

@@ -1,6 +1,7 @@
 import time from '@/plugins/time.js'
 import $ from 'jquery'
 import getAge from  '@/plugins/getAge.js'
+import Test from '../test/test.vue'
 
 import {
     hideBox, 
@@ -38,7 +39,7 @@ var tableCateM = [
     { name: "家庭住址", width: "200", scription: "homeAddress" },
     { name: "学历", width: "80", scription: "education" },
     { name: "政治面貌", width: "80", scription: "political" },
-    { name: "类别", width: "80", scription: "type" },
+    { name: "类别", width: "80", scription: "type" }, 
     { name: "单位地址", width: "80", scription: "companyAddress" },
     { name: "单位邮编", width: "80", scription: "companyPostcodes" },
     { name: "单位电话", width: "80", scription: "companyPhone" },
@@ -46,11 +47,20 @@ var tableCateM = [
   ]
 
 export default  {
+    components: {
+        Test
+    },
     data() { 
         return {
             tableCate: [],
 
             tableData: [],
+
+            // 选中元素坐标
+            curEleCoor: {
+                x: '',
+                y: ''
+            },
             
             eleList: [],
             show: false,
@@ -70,8 +80,9 @@ export default  {
                 height: ''
             },
             model: {
-                width: '300',
-                height: '400',
+                // 1.6
+                width: '60',
+                height: '40',
                 bgcolor: '#fff',
                 bleedingSite: '0'
             },
@@ -108,7 +119,9 @@ export default  {
                 'varName': '', // 变量名
 
                 cte: '', // 文本内容
-                defaultCte: '双击更改文本' // 默认内容  /  上一次数据
+                defaultCte: '双击更改文本', // 默认内容  /  上一次数据
+
+                curEleCoor: {}
             },
 
             varName: '',
@@ -148,10 +161,27 @@ export default  {
             edit_mo: false,
             editTc: '',
             attrArr: [],
-            lb: '100%'
+            lb: '100%',
+
+            tNode: null
         }
     },
     methods: {
+        // 文本-图片中基本样式 获取输入框中的值
+        getVal(type, e){
+            switch(type){
+                case 'curEleCoorX': 
+                    console.log(e) 
+                    this.defaultStyle.curEleCoor.x = +e
+                    $(this.tNode).css("transform", `translate(${e * 5}px, ${this.defaultStyle.curEleCoor.y * 5}px)`);
+            ;break
+                case 'curEleCoorY': 
+                    console.log(e) 
+                    this.defaultStyle.curEleCoor.y = +e
+                    $(this.tNode).css("transform", `translate(${this.defaultStyle.curEleCoor.x * 5}px, ${e * 5}px)`);
+            ;break
+            }
+        },
         // 编辑模板
         editModel(){
             this.edit_mo = true
@@ -362,15 +392,20 @@ export default  {
                     })
 
                     // 过滤 tableCate
-                    this.tableCate = tableCateM.filter(item => this.attrArr.includes(item.scription) && item)
+                    this.tableCate = tableCateM.filter(item => {
+                        if(item.scription != 'photoFileId'){
+                           return this.attrArr.includes(item.scription) && item
+                        }
+                        
+                    })
                     if(this.tableCate.length == 0){
                         this.tableCate = [
                             { name: "姓名", width: "50", scription: "userName" },
                             { name: "性别", width: "30", scription: "sex" },
-                            { name: "相片", width: "70", scription: "photoFileId" }
+                            // { name: "相片", width: "70", scription: "photoFileId" }
                         ]
                     }
-                    console.log(this.tableCate)
+                    console.log('this.tableCate: ', this.tableCate)
                     // 循环 隐藏 '双击选择图片' '双击更改文本' 字样
                     for(let i = 0; i < this.eleList.length; i++) {
                         if(document.querySelectorAll('.invite-text-box .tip')[i + this.eleList.length].innerText == '双击更改文本' || document.querySelectorAll('.invite-text-box .tip')[i + this.eleList.length].innerText == '双击选择图片')
@@ -894,49 +929,21 @@ export default  {
         // 监听图片元素位置大小 宽度 高度 上边距 左边距
         "img.width": function(val) {
             this.defaultStyle.width = val
-
+            
             $(this.tNode).css("width", val + 'px');
         }, // width
         "img.height": function(val) {
             this.defaultStyle.height = val
             $(this.tNode).css("height", val + 'px');
         }, // height
-        "img.paddingT": function(val) {
-            console.log(this.defaultStyle)
-            // var parent = document.querySelector('.mask'),
-            //     bigY = +parent.offsetHeight - 2,
-            //     translateY
+        // "defaultStyle.curEleCoor.x": function(val) {
+        //     console.log('val+++',val)
+        //     this.defaultStyle.curEleCoor.x = +val
+        //     // $(this.tNode).css("transform", `translate(${this.defaultStyle.curEleCoor.y * 5}px, ${val * 5}px)`);
+        //     // this.defaultStyle.translateY = val
 
-            // console.log(val, bigY, translateY, this.defaultStyle.height)
-
-            // if(val < (bigY / 2)){
-            //     translateY = -(bigY / 2 - val - this.defaultStyle.height / 2)
-            // } else if(val >= (bigY / 2)){
-            //     translateY = val - bigY / 2 - this.defaultStyle.height / 2
-            // }
-            // console.log($(this.tNode), translateY)
-            // $(this.tNode).css("transform", `translate(${this.defaultStyle.translateX}px, ${translateY}px)`);
-            // this.defaultStyle.translateY = translateY
-            $(this.tNode).css("transform", `translate(${this.defaultStyle.translateX}px, ${val}px)`);
-            this.defaultStyle.translateY = val
-
-        }, // paddingT
+        // }, // paddingT
         "img.paddingL": function(val) {
-            // var parent = document.querySelector('.mask'),
-            //     bigX = +parent.offsetWidth - 2,
-            //     translateX
-
-            // console.log(val, bigX, translateX)
-
-            // if(val < (bigX / 2)){
-            //     translateX = -(bigX / 2 - val - this.defaultStyle.width / 2)
-            // } else if(val >= (bigX / 2)){
-            //     translateX = val - bigX / 2 - this.defaultStyle.width / 2
-            // }
-
-            // console.log($(this.tNode), translateX)
-            // $(this.tNode).css("transform", `translate(${translateX}px, ${this.defaultStyle.translateY}px)`);
-            // this.defaultStyle.translateX = translateX
 
             $(this.tNode).css("transform", `translate(${val}px, ${this.defaultStyle.translateY}px)`);
             this.defaultStyle.translateX = val
@@ -954,40 +961,11 @@ export default  {
         }, // height
         "text.paddingT": function(val) {
             console.log(this.defaultStyle)
-            // var parent = document.querySelector('.mask'),
-            //     bigY = +parent.offsetHeight - 2,
-            //     translateY
 
-            // console.log(val, bigY, translateY, this.defaultStyle.height)
-
-            // if(val < (bigY / 2)){
-            //     translateY = -(bigY / 2 - val - this.defaultStyle.height / 2)
-            // } else if(val >= (bigY / 2)){
-            //     translateY = val - bigY / 2 - this.defaultStyle.height / 2
-            // }
-
-            // console.log($(this.tNode), translateY)
-            // $(this.tNode).css("transform", `translate(${this.defaultStyle.translateX}px, ${translateY}px)`);
-            // this.defaultStyle.translateY = translateY
             $(this.tNode).css("transform", `translate(${this.defaultStyle.translateX}px, ${val}px)`);
             this.defaultStyle.translateY = val
         }, // paddingT
         "text.paddingL": function(val) {
-            // var parent = document.querySelector('.mask'),
-            //     bigX = +parent.offsetWidth - 2,
-            //     translateX
-
-            // console.log(val, bigX, translateX)
-
-            // if(val < (bigX / 2)){
-            //     translateX = -(bigX / 2 - val - this.defaultStyle.width / 2)
-            // } else if(val >= (bigX / 2)){
-            //     translateX = val - bigX / 2 - this.defaultStyle.width / 2
-            // }
-
-            // console.log($(this.tNode), translateX)
-            // $(this.tNode).css("transform", `translate(${translateX}px, ${this.defaultStyle.translateY}px)`);
-            // this.defaultStyle.translateX = translateX
 
             $(this.tNode).css("transform", `translate(${val}px, ${this.defaultStyle.translateY}px)`);
             this.defaultStyle.translateX = val
@@ -999,7 +977,7 @@ export default  {
             // 更新数据
             this.defaultStyle.cte = val
             // 替换数据
-            console.log(this.tNode.innerHTML)
+            // console.log(this.tNode.innerHTML)
             var text = this.tNode.innerText
             // this.tNode.innerHTML = this.tNode.innerHTML.replace('>'+ this.defaultStyle.defaultCte +'<', '>'+val+'<')
             this.tNode.innerHTML = this.tNode.innerHTML.replace('>'+ text +'<', '>'+val+'<')

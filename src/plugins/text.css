@@ -22,11 +22,12 @@
     z-index: 1;
 }
 
-.invite-text-box-text .tip {
+.tip {
+    /* overflow-y: auto; */
     padding: 5px;
-    font-size: 14px;
+    font-size: 12px;
     text-align: center;
-    
+    box-sizing: border-box;
     background-size: 100% 100%;
     background-repeat: no-repeat;
 }
