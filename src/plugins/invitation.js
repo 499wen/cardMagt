@@ -181,7 +181,7 @@ export function drop(event, _this) {
 	// console.log(_this.eleList)
 	// 将创建的元素 保存eleList 数组中
 	_this.eleList.push({
-		name: _this.curElem + (+num + 1),
+		name: _this.curElem,
 		nodeKey: _this.curElem + (+num + 1),
 		dom: node,
 		tips: _this.curElem,

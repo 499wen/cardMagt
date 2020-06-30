@@ -176,9 +176,33 @@ ul, li {
                 align-content: flex-start;
                 flex-wrap: wrap;
 
-                div {
-                    margin-right: 20px;
-                    margin-bottom: 10px;
+                // div {
+                //     margin-right: 20px;
+                //     margin-bottom: 10px;
+                // }
+                .ele-btn {
+                    margin: 0 5px;
+                    margin-bottom: 5px;
+                    width: 20%;
+                    cursor: pointer;
+                    max-width: 50px;
+                    min-width: 30px;
+                    font-size: 14px;
+                    border: 1px solid #ccc;
+                    padding: 4px;
+                    text-align: center;
+                    
+
+                    img {
+                        width: 100%;
+                        height: auto;
+                    }
+                    div {
+                        width: 100%;
+                        white-space:nowrap;
+                        overflow:hidden;
+                        text-overflow:ellipsis;
+                    }
                 }
             }
         }

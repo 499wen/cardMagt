@@ -5,7 +5,7 @@ import Test from '../test/test.vue'
 
 import {
     hideBox, 
-    idMap, 
+    idMap,  
     nodeStyleMap,
     nodes,
     drop,
@@ -897,7 +897,7 @@ export default  {
             
             if(!val) return
             // 修改元素列表的文本提示
-            this.eleList.filter(item => item.nodeKey == this.tNode.eleListName ? item.name = val : '')
+            // this.eleList.filter(item => item.nodeKey == this.tNode.eleListName ? item.name = val : '')
 
             // 记录数据 保存 添加变量名的dom 
             this.eleList.filter( item => {
@@ -978,8 +978,12 @@ export default  {
         "defaultStyle.cte": function(val){
             console.log(val)
             if(!val) return 
+            val = val.trim()
             // 更新数据
             this.defaultStyle.cte = val
+            console.log(this.tNode.dataset.cont, this.eleList)
+            this.eleList.filter(item => item.nodeKey == this.tNode.dataset.cont ? item.name = val : '')
+            
             // 替换数据
             // console.log(this.tNode.innerHTML)
             var text = this.tNode.innerText
