@@ -15,6 +15,7 @@ let nodeNum = 0
 let that = null
 let moveMethod; 
 let x = 0, y = 0
+let moveWidth
 
 
 import $ from 'jquery'
@@ -165,26 +166,26 @@ export function drop(event, _this) {
 
 	let num = _this.eleList.filter( item => item.tips == _this.curElem && item ).length
 
-	// 去除其它的选中 "photoFileId"
-	var varArr = ['photoFileId','userName','phone','sex']
-	_this.eleList = _this.eleList.map(item => {
-		console.log(item.name, varArr.includes(item.name))
-		if(varArr.includes(item.name)){
-			item.select = true
-		} else {
-			item.select = false
-		}
+	// 去除其它的选中 
+	// var varArr = ['photoFileId', 'userName', 'phone', 'sex']
+	// _this.eleList = _this.eleList.map(item => {
+	// 	console.log(item.name, varArr.includes(item.name))
+	// 	if(varArr.includes(item.name)){
+	// 		item.select = true
+	// 	} else {
+	// 		item.select = false
+	// 	}
 
-		return item
-	})
-	console.log(_this.eleList)
+	// 	return item
+	// })
+	// console.log(_this.eleList)
 	// 将创建的元素 保存eleList 数组中
 	_this.eleList.push({
 		name: _this.curElem + (+num + 1),
 		nodeKey: _this.curElem + (+num + 1),
 		dom: node,
 		tips: _this.curElem,
-		select: true
+		select: false
 	})
 
 	// 用作 选中元素时 的判断
@@ -250,6 +251,9 @@ export function drop(event, _this) {
 		// 	return
 		// }
 		console.log('e.target:', $(e.target), this)
+		// 获取模板大小
+		moveWidth = +that.model.width * 5
+
 		mouseIsDown = true;
 		currentNode = this;
 		mouseX = e.pageX;
@@ -448,9 +452,12 @@ document.body.onmouseup = function(event) {
 	currentNode = null
 	moveMethod = '';
 
-	var item = nodeStyleMap.get(that.tNode.id)
-	item.x = 0
-	item.y = 0
+	if(that && that.tNode){
+		console.log(that.tNode)
+		var item = nodeStyleMap.get(that.tNode.id)
+		item.x = 0
+		item.y = 0
+	}
 }
 
 document.body.onmousemove = function(event) {
@@ -461,43 +468,35 @@ document.body.onmousemove = function(event) {
 	var item = nodeStyleMap.get(that.tNode.id)
 	let moveX = event.pageX - mouseX;
 	let moveY = event.pageY - mouseY;
+	// moveWidth = item
 	// console.log(item.curEleCoor.y, moveY, item.y)
 	
-
-
-	// var chaValY = moveY, chaValX = moveX
-	// that.curEleCoor = {
-	// 	x: that.curEleCoor.x + Math.floor(moveX / 5),
-	// 	y: that.curEleCoor.y + Math.floor(moveY / 5)
-	// }
-	// console.log("move = " +moveX,moveY,(nodeX+moveX),(nodeY+moveY))
 	if (moveMethod == 'move') {
-		// console.log("move")
+		console.log("move")
 
 			// 获取差值
 			if(item.x != moveX){
 				var chaValX = (Math.floor(moveX * 10 / 5) - Math.floor(item.x * 10 / 5)) / 10
-				// console.log('chaValX: ', typeof chaValX, chaValX)
+				// console.log('chaValX: ', typeof +chaValX.toFixed(1), typeof +item.curEleCoor.x, +chaValX.toFixed(1), +item.curEleCoor.x)
 				
-				
-				item.curEleCoor.x = +item.curEleCoor.x + chaValX.toFixed(1)
-				item.x = moveX
+				item.curEleCoor.x = (+item.curEleCoor.x + +chaValX).toFixed(1)
+				item.x = moveX 
 			} 
 
 			if(item.y != moveY){
 				var chaValY = (Math.floor(moveY * 10 / 5) - Math.floor(item.y * 10 / 5)) / 10
 				// console.log('chaValY: ', typeof chaValY, chaValY)
 
-				item.curEleCoor.y = +item.curEleCoor.y + chaValY.toFixed(1)
+				item.curEleCoor.y = (+item.curEleCoor.y + +chaValY).toFixed(1)
 				item.y = moveY
 			}
 		move(moveX, moveY)
 	} else if (moveMethod == 'topResize') {
 		if(item.y != moveY){
 			var chaValY = (Math.floor(moveY * 10 / 5) - Math.floor(item.y * 10 / 5)) / 10
-			console.log('chaValY: ', typeof chaValY, chaValY)
+			// console.log('chaValY: ', typeof chaValY, chaValY)
 
-			item.curEleCoor.y = (+item.curEleCoor.y + chaValY).toFixed(1)
+			item.curEleCoor.y = (+item.curEleCoor.y + +chaValY).toFixed(1)
 			item.y = moveY
 		} 
 		topResize(moveX, moveY)
@@ -510,22 +509,69 @@ document.body.onmousemove = function(event) {
 			var chaValX = (Math.floor(moveX * 10 / 5) - Math.floor(item.x * 10 / 5)) / 10
 			console.log('chaValX: ', typeof chaValX, chaValX)
 
-			item.curEleCoor.x = (+item.curEleCoor.x + chaValX).toFixed(1)
+			item.curEleCoor.x = (+item.curEleCoor.x + +chaValX).toFixed(1)
 			item.x = moveX
 		} 
 		leftResize(moveX, moveY)
 	} else if (moveMethod == 'rightResize') {
 		rightResize(moveX, moveY)
-	}
+	} else if (moveMethod == 'leftTopResize'){
 
+		return 
+		// 获取差值
+		if(item.x != moveX){
+			var chaValX = (Math.floor(moveX * 10 / 5) - Math.floor(item.x * 10 / 5)) / 10
+			// console.log('chaValX: ', typeof +chaValX.toFixed(1), typeof +item.curEleCoor.x, +chaValX.toFixed(1), +item.curEleCoor.x)
+			
+			item.curEleCoor.x = (+item.curEleCoor.x + +chaValX).toFixed(1)
+			item.x = moveX 
+		} 
+
+		if(item.y != moveY){
+			var chaValY = (Math.floor(moveY * 10 / 5) - Math.floor(item.y * 10 / 5)) / 10
+			// console.log('chaValY: ', typeof chaValY, chaValY)
+
+			item.curEleCoor.y = (+item.curEleCoor.y + +chaValY).toFixed(1)
+			item.y = moveY
+		}
+		leftTopResize(moveX, moveY)
+	} else if (moveMethod == 'rightBottomResize'){
+
+		rightBottomResize(moveX, moveY)
+	} else if (moveMethod == 'leftBottomResize'){
+
+		return 
+		if(item.x != moveX){
+			var chaValX = (Math.floor(moveX * 10 / 5) - Math.floor(item.x * 10 / 5)) / 10
+			// console.log('chaValX: ', typeof +chaValX.toFixed(1), typeof +item.curEleCoor.x, +chaValX.toFixed(1), +item.curEleCoor.x)
+			
+			
+			item.curEleCoor.x = (+item.curEleCoor.x + +chaValX).toFixed(1)
+			item.x = moveX 
+		} 
+		leftBottomResize(moveX, moveY)
+	} else if (moveMethod == 'rightTopResize'){
+		
+		return  
+		if(item.y != moveY){
+			var chaValY = (Math.floor(moveY * 10 / 5) - Math.floor(item.y * 10 / 5)) / 10
+			// console.log('chaValY: ', typeof chaValY, chaValY)
+
+			item.curEleCoor.y = (+item.curEleCoor.y + +chaValY).toFixed(1)
+			item.y = moveY
+		}
+		rightTopResize(moveX, moveY)
+	} 
 
 }
 
+// 移动
 function move(moveX, moveY) {
 	// console.log(currentNode)
 	$(currentNode).css('transform', 'translate(' + (nodeX + moveX) + 'px,' + (nodeY + moveY) + 'px)');
 }
 
+// 上
 function topResize(moveX, moveY) {
 	if (nodeHeight - moveY <= 20) {
 		return
@@ -534,6 +580,7 @@ function topResize(moveX, moveY) {
 	$(currentNode).css('transform', 'translate(' + (nodeX) + 'px,' + (nodeY + moveY) + 'px)');
 }
 
+// 下
 function bottomResize(moveX, moveY) {
 	if (nodeHeight + moveY <= 20) {
 		return
@@ -541,21 +588,71 @@ function bottomResize(moveX, moveY) {
 	$(currentNode).css('height', (nodeHeight + moveY) + 'px')
 }
 
+// 左
 function leftResize(moveX, moveY) {
 	if (nodeWidth - moveX <= 20) {
 		return
 	}
 
-	$(currentNode).css('width', (nodeWidth - moveX) / 298 * 101.5 + '%')
+	$(currentNode).css('width', (nodeWidth - moveX) / moveWidth * 101.5 + '%')
 	$(currentNode).css('transform', 'translate(' + (nodeX + moveX) + 'px,' + (nodeY) + 'px)');
 }
 
+// 右
 function rightResize(moveX, moveY) {
 	if (nodeWidth + moveX <= 20) {
 		return
 	}
-	$(currentNode).css('width', (nodeWidth + moveX) / 300 * 101.5 + '%')
+	$(currentNode).css('width', (nodeWidth + moveX) / moveWidth * 101.5 + '%')
 }
+
+
+// 左上
+function leftTopResize(moveX, moveY) {
+	if (nodeWidth - moveX <= 20 || nodeHeight - moveY <= 20) {
+		return
+	}
+
+	$(currentNode).css('width', (nodeWidth - moveX) / moveWidth * 101.5 + '%')
+	$(currentNode).css('height', (nodeHeight - moveY) + 'px')
+	
+	$(currentNode).css('transform', 'translate(' + (nodeX + moveX) + 'px,' + (nodeY + moveY) + 'px)');
+}
+
+// 左下
+function leftBottomResize(moveX, moveY) {
+	if (nodeWidth - moveX <= 20 || nodeHeight + moveY <= 20) {
+		return
+	}
+
+	$(currentNode).css('width', (nodeWidth - moveX) / moveWidth * 101.5 + '%')
+	$(currentNode).css('height', (nodeHeight + moveY) + 'px')
+	
+	$(currentNode).css('transform', 'translate(' + (nodeX + moveX) + 'px,' + (nodeY) + 'px)');
+}
+
+// 右上
+function rightTopResize(moveX, moveY) {
+	if (nodeWidth + moveX <= 20 || nodeHeight - moveY <= 20) {
+		return
+	}
+
+	$(currentNode).css('width', (nodeWidth + moveX) / moveWidth * 101.5 + '%')
+	$(currentNode).css('height', (nodeHeight - moveY) + 'px')
+
+	$(currentNode).css('transform', 'translate(' + (nodeX) + 'px,' + (nodeY + moveY) + 'px)');
+}
+
+// 右下
+function rightBottomResize(moveX, moveY) {
+	if (nodeWidth + moveX <= 20 || nodeHeight + moveY <= 20) {
+		return
+	}
+	$(currentNode).css('width', (nodeWidth + moveX) / moveWidth * 101.5 + '%')
+	$(currentNode).css('height', (nodeHeight + moveY) + 'px')
+}
+
+
 
 export {
 	nodes,

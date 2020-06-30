@@ -11,7 +11,7 @@ import {
     drop,
     initNode,
     addSubmitForm, 
-    imageDrag, 
+    imageDrag,  
     imageDragover 
 } from "@/plugins/invitation.js";
 // import { map } from 'core-js/fn/array';
@@ -41,7 +41,7 @@ var tableCateM = [
     { name: "政治面貌", width: "80", scription: "political" },
     { name: "类别", width: "80", scription: "type" }, 
     { name: "单位地址", width: "80", scription: "companyAddress" },
-    { name: "单位邮编", width: "80", scription: "companyPostcodes" },
+    { name: "单位邮编", width: "80", scription: "companyPostcodes" }, 
     { name: "单位电话", width: "80", scription: "companyPhone" },
     { name: "家庭电话", width: "80", scription: "homePhone" }, 
   ]
@@ -81,10 +81,12 @@ export default  {
             },
             model: {
                 // 1.6
-                width: '60',
-                height: '40',
-                bgcolor: '#fff',
-                bleedingSite: '0'
+                width: '86', // 宽
+                height: '54', // 高
+                bgcolor: '#fff', // 背景颜色
+                bleedingSite: '0', // 出血位
+                bgimage: '', // 背景图片
+                bl: '', // 缩放比例
             },
 
             headers: {
@@ -129,7 +131,7 @@ export default  {
             idList: [],
             showKey: 0,
             headerTag: [
-                {label: '模板制作', name: '模板制作', select: true},
+                {label: '样式设计', name: '样式设计', select: true},
                 {label: '数据填充', name: '数据填充', select: false},
                 // {label: '导出', name: '导出', select: false},
             ],
@@ -161,7 +163,6 @@ export default  {
             edit_mo: false,
             editTc: '',
             attrArr: [],
-            lb: '100%',
 
             tNode: null
         }
@@ -217,8 +218,6 @@ export default  {
         delModel(e){
             // 加判断 提示用户是否删除模板
 
-            
-
             var id = null
             var item = this.model__.filter( (item, idx) => {
                 if(item.select){
@@ -249,7 +248,7 @@ export default  {
                 // content = JSON.stringify(box.innerHTML),
                 content = JSON.stringify(box.parentNode.innerHTML),
                 attr = JSON.stringify(this.eleList),
-                data = {content, attr}
+                data = {content, attr, publicAttr: JSON.stringify(this.model)}
 
             // 更新模板
             if(this.edit_mo){
@@ -330,7 +329,9 @@ export default  {
         // 元素列表 - 选中的元素
         selectDom(item, idx){
             console.log(item.dom)
-            this.eleList.filter( (i, index) => idx == index ? i.select = true : i.select = false )
+            // if(!arrVarName.get(item.name)){
+            //     // this.eleList.filter( (i, index) => idx == index ? i.select = true : i.select = false )
+            // }
 
             item.dom.click()
         },
@@ -584,10 +585,11 @@ export default  {
             if (res.code == "000") {
                 let img = "/api/filecenter/file/file/" + res.data.id,
                     box = document.querySelector('.box')
+                    this.model.bgimage = img
 
                     setTimeout(() => {
                         box.style.backgroundImage = `url(${img})`
-                        box.style.color = `transparent`
+                        // box.style.color = `transparent`
                     }, 500)
             }
             // this.$refs.elupload.clearFiles();
@@ -746,8 +748,8 @@ export default  {
         }
     },
     mounted() {
-        this.init()
-        this.getModel()
+        // this.init()
+        // this.getModel()
     },
     watch: {
         // meetId: function(val, oldVal) {
@@ -881,7 +883,7 @@ export default  {
             $(this.tNode).css("z-index", val);
         },
 
-        // 变量名
+        // 变量名  只有添加变量名 select为 true
         "defaultStyle.varName": function(val) {
             // 去重
             if(val && document.querySelector('.' + val)){
@@ -897,7 +899,7 @@ export default  {
             // 修改元素列表的文本提示
             this.eleList.filter(item => item.nodeKey == this.tNode.eleListName ? item.name = val : '')
 
-            // 记录数据 保存 添加变量名的dom
+            // 记录数据 保存 添加变量名的dom 
             this.eleList.filter( item => {
                 if(item.nodeKey == this.tNode.dataset.cont){
                     item.name = val
@@ -910,6 +912,8 @@ export default  {
                 this.tNode.classList.remove(this.tNode.classList[2])
             }
             this.tNode.classList.add(val)
+
+            console.log(this.eleList)
         },
         "varName": function(val) {
             // 去重
@@ -986,10 +990,10 @@ export default  {
             this.defaultStyle.defaultCte = val
         },
         // 缩放比例
-        'lb': function(val) {
+        'model.bl': function(val) {
             console.log(val)
             var n = +val.replace('%', '') / 100
-            document.querySelector('.vue-ruler-wrapper').style.zoom = n
+            document.querySelector('.rules').style.zoom = n
         }
     },
 
