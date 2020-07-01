@@ -116,8 +116,8 @@ export default  {
                 shadowDirectionH: 0,
                 shadowColor: "#000",
 
-                'width': '105', // 宽度
-                'height': '105', // 高度
+                'width': '', // 宽度
+                'height': '', // 高度
                 'varName': '', // 变量名
 
                 cte: '', // 文本内容
@@ -149,13 +149,23 @@ export default  {
             arrVarName, // 储存属性 map类型 {'photoFileId' => '头像'}
             cte: '双击更改文本',
 
+            tData: { 
+                pageNum: 1,
+                pageSize: 10, // 999
+                total: 0,
+                currentPage: 1,
+            }, // 表单分页
 
-            pageNum: 1,
-            pageSize: 10, // 999
-            total: 0,
-            currentPage: 1,
+            mData: { 
+                pageNum: 1,
+                pageSize: 10, // 999
+                total: 0,
+                currentPage: 1,
+            }, // 模板分页
+
             model__: [
-                {content: ''}
+                {content: '', id: '41144445', check: false},
+                {content: '', id: '99522344', check: false},
             ],
             haveHave: false,
             modelBox: false,
@@ -164,10 +174,22 @@ export default  {
             editTc: '',
             attrArr: [],
 
-            tNode: null
+            tNode: null,
+            wantDelModel: [],  // 需要删除的模板id
         }
     },
     methods: {
+        // 选择模板 - 勾选复选框
+        chioce(item){
+            let wDM = this.wantDelModel, 
+                id = item.id
+            // 判断是否存在   存在 - 删除  不存在 - 添加
+            if(wDM.includes(id)){
+                wDM.splice(wDM.indexOf(id), 1)
+            } else {
+                wDM.push(id)
+            }
+        },
         // 文本-图片中基本样式 获取输入框中的值
         getVal(type, e){
             switch(type){
@@ -206,7 +228,9 @@ export default  {
         },
         // 打开模板
         openModel(){
-            if(!this.model__.length){
+            console.log(this.model__.length)
+            
+            if(this.model__.length == 0){
                 this.$message.error('目前还未添加模板, 请先添加!')
                 return 
             }
@@ -216,7 +240,12 @@ export default  {
         },
         // 删除模板
         delModel(e){
+            if(!this.wantDelModel.length){
+                this.$message('请先勾选模板！')
+                return 
+            }
             // 加判断 提示用户是否删除模板
+
 
             var id = null
             var item = this.model__.filter( (item, idx) => {
@@ -225,7 +254,8 @@ export default  {
                     return item 
                 } 
             }),
-                ids = item.map(item => item.id)
+            // ids = item.map(item => item.id)
+            ids = this.wantDelModel
             console.log(item, ids)
 
             // return 
@@ -268,18 +298,31 @@ export default  {
                     }
                 })
         },
-        // 分页
+        // 表格 - 分页
         handleSizeChange(val) {
             console.log(`每页 ${val} 条`);
-            this.pageSize = val;
-            this.pageNum = 1
+            this.tData.pageSize = val;
+            this.tData.pageNum = 1
             this.init();
         }, //handleSizeChange
         handleCurrentChange(val) {
             console.log(`当前页: ${val}`);
-            this.pageNum = val;
+            this.tData.pageNum = val;
             this.init();
         }, //handleSizeChange
+
+        // 模板 - 分页
+        modelSizeChange(val) {
+            console.log(`每页 ${val} 条`);
+            this.mData.pageSize = val;
+            this.mData.pageNum = 1
+            this.init();
+        }, //modelSizeChange
+        modelCurrentChange(val) {
+            console.log(`当前页: ${val}`);
+            this.mData.pageNum = val;
+            this.init();
+        }, //modelCurrentChange
         // 设置层级
         setTop(num){
             this.defaultStyle.hierarchy = num
@@ -403,7 +446,7 @@ export default  {
                         this.tableCate = [
                             { name: "姓名", width: "50", scription: "userName" },
                             { name: "性别", width: "30", scription: "sex" },
-                            // { name: "相片", width: "70", scription: "photoFileId" }
+                            { name: "相片", width: "70", scription: "photoFileId" }
                         ]
                     }
                     console.log('this.tableCate: ', this.tableCate)
@@ -681,7 +724,7 @@ export default  {
             }
             
             this.$http.post(
-                `/api/usercenter/user/users/${this.type}/key?pageNum=${this.pageNum}&pageSize=${this.pageSize}`,
+                `/api/usercenter/user/users/${this.type}/key?pageNum=${this.tData.pageNum}&pageSize=${this.tData.pageSize}`,
                 this.searchCondition
               )
               .then(res => {
@@ -706,7 +749,7 @@ export default  {
                   console.log(data.content)
                   var arr = data.content
       
-                  _this.totalCount = data.totalElements;
+                  _this.tData.totalCount = data.totalElements;
                   _this.tableData = arr;
 
                   console.log(_this.tableData)
@@ -718,38 +761,46 @@ export default  {
       
                   loading && loading.close();
       
-                  _this.total = data.totalElements
-                  _this.pageNum = data.totalPages
+                  _this.tData.total = data.totalElements
+                  _this.tData.pageNum = data.totalPages
                 } else {
-                  _this.totalCount = 0;
-                  _this.tableData = [];
+                  _this.tData.totalCount = 0;
+                  _this.tData.tableData = [];
                 } 
               })
               .catch(res => {
                 console.log(res);
-                _this.totalCount = 0;
-                _this.tableData = [];
+                _this.tData.totalCount = 0;
+                _this.tData.tableData = [];
               });
           }, //searchData
         //  获取模板
         getModel(){
-            this.$http.get(`/api/usercenter/personTemplate/page?pageNum=${1}&pageSize=${10}`)
+            let _this = this
+
+            this.$http.get(`/api/usercenter/personTemplate/page?pageNum=${1}&pageSize=${3}`)
             .then( res => {
                 console.log(res)
-                var data = res.data.content
-                data.filter( item => {
-                    item.content = JSON.parse(item.content)
-                    item.select = false
-                })
-                this.model__ = data
-
-                console.log(this.model__)
+                if(res.code = '000'){
+                    var data = res.data
+                    data.content.filter( item => {
+                        item.content = JSON.parse(item.content)
+                        item.select = false
+                    })
+                    this.model__ = data.content
+                    _this.mData.total = data.totalElements
+                    _this.mData.pageNum = data.totalPages
+                    console.log(this.model__)
+                } else {
+                    _this.mData.totalCount = 0;
+                    _this.mData.tableData = [];
+                }
             })
         }
     },
     mounted() {
-        // this.init()
-        // this.getModel()
+        this.init()
+        this.getModel()
     },
     watch: {
         // meetId: function(val, oldVal) {
@@ -932,13 +983,13 @@ export default  {
 
         // 监听图片元素位置大小 宽度 高度 上边距 左边距
         "img.width": function(val) {
-            this.defaultStyle.width = val
+            this.defaultStyle.width = val * 5
             
-            $(this.tNode).css("width", val + 'px');
+            $(this.tNode).css("width", val * 5 + 'px');
         }, // width
         "img.height": function(val) {
-            this.defaultStyle.height = val
-            $(this.tNode).css("height", val + 'px');
+            this.defaultStyle.height = val * 5
+            $(this.tNode).css("height", val * 5+ 'px');
         }, // height
         // "defaultStyle.curEleCoor.x": function(val) {
         //     console.log('val+++',val)
@@ -954,14 +1005,14 @@ export default  {
         }, // paddingL
 
         // 监听文本元素位置大小 宽度 高度 上边距 左边距
-        "text.width": function(val) {
-            this.defaultStyle.width = val
+        "defaultStyle.width": function(val) {
+            // this.defaultStyle.width = val * 5
 
-            $(this.tNode).css("width", val + 'px');
+            $(this.tNode).css("width", val * 5 + 'px');
         }, // width
-        "text.height": function(val) {
-            this.defaultStyle.height = val
-            $(this.tNode).css("height", val + 'px');
+        "defaultStyle.height": function(val) {
+            // this.defaultStyle.height = val * 5
+            $(this.tNode).css("height", val * 5 + 'px');
         }, // height
         "text.paddingT": function(val) {
             console.log(this.defaultStyle)

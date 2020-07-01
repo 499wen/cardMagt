@@ -105,8 +105,8 @@ export function drop(event, _this) {
 					"shadowDirectionV":0,  // 水平
 					"shadowDirectionH":0,  //垂直方向
 					
-					'width': '105', // 宽度
-					'height': '105', // 高度
+					'width': '21', // 宽度
+					'height': '21', // 高度
 					'top': '0', // 上边距
 					'left': '0', // 左边距
 					"translateX": '', 

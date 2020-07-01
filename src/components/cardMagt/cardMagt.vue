@@ -113,7 +113,7 @@
                     <!-- 右侧部分 -->
                     <div class="model-make-right">
                         <div style="width: 200px; height: 100%">
-                            <div class="ele-list">元素列表</div>
+                            <div class="ele-list" onclick='aaa()'>元素列表</div>
                             <div class="ele-single">
                                 <div v-for="(item, idx) in eleList" :key="idx">
                                     
@@ -128,10 +128,7 @@
                                         <img src="../../../public/static/images/invittext.png" v-else alt="">
                                         <div>{{ arrVarName.get(item.name) || item.name }}</div>
                                     </div>
-                                    <!-- 
-                                    <el-button v-if="item.select" style="border-color: #054592; color: #333; background-color: #fff;" size="mini" @click="selectDom(item, idx)">{{ arrVarName.get(item.name) || item.name }}</el-button>
-                                    <el-button v-else size="mini" style="border-color: #dcdfe6; color: #333; background-color: #fff;" @click="selectDom(item, idx)">{{ arrVarName.get(item.name) || item.name }}</el-button>
-                                    -->
+                                    
                                 </div>
                             </div>
                         </div>
@@ -170,7 +167,8 @@
                             >
                                 <template slot-scope="scope">
                                     <div v-if="item.scription == 'photoFileId'">
-                                        <img :src="'/api/filecenter/file/file/'+ scope.row[item.scription]" width="30" height='30'/>
+                                        {{ '/api/filecenter/file/file/' + scope.row[item.scription] }}
+                                        <!-- <img :src="'/api/filecenter/file/file/'+ scope.row[item.scription]" width="30" height='30'/> -->
                                     </div>
                                     <div v-else>{{ scope.row[item.scription] }}</div>
                                 </template>
@@ -184,11 +182,11 @@
                             size='mini'
                             @size-change="handleSizeChange"
                             @current-change="handleCurrentChange"
-                            :current-page="currentPage"
+                            :current-page="tData.currentPage"
                             :page-sizes="[30, 60, 90]"
-                            :page-size="pageSize"
+                            :page-size="tData.pageSize"
                             layout="total, prev, pager, next"
-                            :total="total">
+                            :total="tData.total">
                         </el-pagination>
                     </div> 
                 </div>
@@ -332,11 +330,11 @@
                                         </li>
                                         <li>
                                             <span>高度</span>
-                                            <el-input size='mini' style="width: 97px;margin-left: -20px;" v-model="text.height"> </el-input>
+                                            <el-input size='mini' style="width: 97px;margin-left: -20px;" v-model="defaultStyle.height"> </el-input>
                                         </li>
                                         <li>
                                             <span>宽度</span>
-                                            <el-input size='mini' style="width: 97px;margin-left: -20px;" v-model="text.width"> </el-input>
+                                            <el-input size='mini' style="width: 97px;margin-left: -20px;" v-model="defaultStyle.width"> </el-input>
                                         </li>
                                     </ul>
                                     <!-- <div class="set-cte">
@@ -501,11 +499,11 @@
                                         </li>
                                         <li>
                                             <span>高度</span>
-                                            <el-input size='mini' style="width: 97px;margin-left: -20px;" v-model="img.height"> </el-input>
+                                            <el-input size='mini' style="width: 97px;margin-left: -20px;" v-model="defaultStyle.height"> </el-input>
                                         </li>
                                         <li>
                                             <span>宽度</span>
-                                            <el-input size='mini' style="width: 97px;margin-left: -20px;" v-model="img.width"> </el-input>
+                                            <el-input size='mini' style="width: 97px;margin-left: -20px;" v-model="defaultStyle.width"> </el-input>
                                         </li>
                                     </ul>
                                     <!--   /api/filecenter/file/file :headers="headers"  -->
@@ -747,31 +745,56 @@
             <!-- 模板功能 - end -->
 
             <!-- 选择模板 - start -->
-
             <el-dialog
-                title="提示"
+                title="选择模板"
                 :visible.sync="modelBox"
                 width="90%"
+                center
                 >
+                <div class="modelBox-nav">
+                    <el-button size='mini' @click="delModel">删除模板</el-button>
+                    <el-button size='mini' v-if="haveHave" @click="editModel">编辑模板</el-button>
+                </div>
+
                 <div class="t-m-box">
-                    <div
-                    :class="['t-m-single', item.select && ' t-m-select']" v-html="item.content" 
-                    v-for="(item, idx) in model__" :key="idx"
-                    @click="switchTm(idx)"
-                    ></div>
-                
-                    <div class="btn-width">
+                    <!-- <el-checkbox-group > -->
+                        <div :class="['t-m-single', item.select && ' t-m-select']" 
+                            v-for="(item, idx) in model__" :key="idx" 
+                            >
+                            <div @click="switchTm(idx)" style="width: 100%; height: 100%" v-html="item.content"></div>
+
+                            <el-checkbox class="check-box" @change="chioce(item)" v-model="item.check"></el-checkbox>
+                        </div>
+                    <!-- </el-checkbox-group> -->
+                    <!-- <div class="btn-width">
                         <el-button @click="delModel" v-if="haveHave">删除</el-button>
                         <el-button v-if="haveHave" @click="editModel">编辑</el-button>
                         <el-button @click="modelBox = false">关闭</el-button>
-                    </div>
+                    </div> -->
+
                 </div>
+                <div class="page" style="height: auto; padding-top: 20px;">
+                    <el-pagination
+                        background
+                        size='mini'
+                        @size-change="modelSizeChange"
+                        @current-change="modelCurrentChange"
+                        :current-page="mData.currentPage"
+                        :page-sizes="[30, 60, 90]"
+                        :page-size="mData.pageSize"
+                        layout="total, prev, pager, next"
+                        :total="mData.total">
+                    </el-pagination>
+                </div> 
                 <!-- <span slot="footer" class="dialog-footer">
                     <el-button size='mini' @click="modelBox = false">取 消</el-button>
                     <el-button size="mini" type="primary" @click="modelBox = false">确 定</el-button>
                 </span> -->
             </el-dialog>
             <!-- 选择模板 - end -->
+
+            <!-- 提示信息 -->
+
         </div>
     </div>
 </template>
@@ -947,6 +970,13 @@ export default CardMagt;
 /* 调色框 */
 .el-color-dropdown {
     left: 810px !important;
+}
+
+/* 复选框 */
+.el-checkbox__input.is-checked .el-checkbox__inner, .el-checkbox__input.is-indeterminate .el-checkbox__inner {
+    background-color: #054592 !important;
+    /* color: #054592 !important; */
+    border-color: #054592 !important;
 }
 
 </style>
