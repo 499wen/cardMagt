@@ -35,8 +35,11 @@ export function textDragover(event) {
 	event.preventDefault()
 }
 
-export function drop(event, _this) {
+export function drop(event, _this, type = false) {
 	that = _this
+
+	// 
+
 	event = event || window.event
 	console.log(event)
 	event.stopPropagation();
@@ -50,7 +53,8 @@ export function drop(event, _this) {
 		return;
 	}
 	let node
-	var nodeValue;
+	let nodeValue;
+	let uuId = uuid()
 
 	if (data == 'invite-text') {
 		nodeValue = "文本";
@@ -83,6 +87,7 @@ export function drop(event, _this) {
 	_this.idList.push(idObject)
 	idMap.set(node.id,_this.showKey)
 	var defaultStyle = {
+					id: uuId,
 					"textColor": "#2c3e50",
 					"fontFamily": "微软雅黑",
 					"fontSize": "14px",
@@ -115,6 +120,7 @@ export function drop(event, _this) {
 					'varName': '', // 变量名
 					'cte': '', // 文本内容
 					'defaultCte': '双击更改文本', // 默认内容  /  上一次数据
+					'img': '', // 图片
 
 					'x': 0,
 					'y': 0,
@@ -185,9 +191,12 @@ export function drop(event, _this) {
 		nodeKey: _this.curElem + (+num + 1),
 		dom: node,
 		tips: _this.curElem,
-		select: false
+		select: false,
+		id: uuId,
+		nodeId: node.id
 	})
 
+	_this.defaultStyle = defaultStyle
 	// 用作 选中元素时 的判断
 	node.dataset.cont = _this.curElem + (+num + 1)
 
@@ -221,6 +230,9 @@ export function drop(event, _this) {
 			}
 		_this.initTemplateCss(this)
 
+		console.log('eleList, defaultStyle ----- ', that.defaultStyle, that.eleList)
+		// 更新数据
+		that.mergeData()
 		// mous(e)
 		// $('#baseStyle').click();
 	})
@@ -331,8 +343,8 @@ export function addSubmitForm(_this) {
 
 } //addSubmitForm
 
-// text = 元素列显示的文字
-export function initNode(node, _this,text) {
+// text = 元素列显示的文字   bool 代表编辑
+export function initNode(node, _this,text, bool = false) {
 		if(text !== undefined){
 			 var idObject = {};
 			 idObject.id = $(node).attr('id');
@@ -343,12 +355,29 @@ export function initNode(node, _this,text) {
 		}
 	
 		console.log(node)
+		that = _this
 	nodes.set($(node).attr('id'), node) 
+
+	// 编辑 将创建的dom 覆盖 eleList中对应的dom  唯一标识 data-cont
+	if(bool){
+		moveWidth = +_this.model.width * 5
+
+		_this.eleList.filter(item => {
+			if(item.nodeKey == node.dataset.cont){
+				// 将defaultStyle中的 nodeId 赋值 node.id
+				node.id = item.nodeId
+				nodeStyleMap.set(node.id, item)
+				console.log('node.id: ', node.id)
+				item.dom = node
+			}
+		})
+	}
 	
 	$(node).click(function(e) {
 		e.stopPropagation()
 		e.preventDefault()
 		hideBox()
+		console.log(node)
 		$(node).find('.invite-text-box-border').css('display', 'block')
 		_this.initTemplateCss(node)
 		
@@ -370,6 +399,17 @@ export function initNode(node, _this,text) {
 		// 	// moveMethod='topResize'
 		// 	return
 		// }
+
+		// 根据 data-cont 关联对应的 node
+		that.eleList.filter(item => {
+			if(item.nodeKey == node.dataset.cont){
+				that.tNode = item.dom
+				that.defaultStyle = item
+			}
+		})
+		
+		// that.tNode = node
+		// console.log(that.tNode)
 		console.log("mouseIsDown = " + mouseIsDown)
 		mouseIsDown = true;
 		currentNode = this;
@@ -383,7 +423,7 @@ export function initNode(node, _this,text) {
 		console.log(nodeWidth, nodeHeight, s)
 		nodeX = s[4] - 0
 		nodeY = s[5].substr(0, s[5].length - 1) - 0
-		console.log($(e.target).hasClass('top-line-point'))
+		console.log(e.target.classList)
 		if ($(e.target).hasClass('top-line-point')) {
 			moveMethod = 'topResize'
 		}
@@ -453,8 +493,9 @@ document.body.onmouseup = function(event) {
 	moveMethod = '';
 
 	if(that && that.tNode){
-		console.log(that.tNode)
+		// console.log(that.tNode)
 		var item = nodeStyleMap.get(that.tNode.id)
+		
 		item.x = 0
 		item.y = 0
 	}
@@ -470,6 +511,7 @@ document.body.onmousemove = function(event) {
 	let moveY = event.pageY - mouseY;
 	// moveWidth = item
 	// console.log(item.curEleCoor.y, moveY, item.y)
+	console.log('moveMethod:::', moveMethod)
 	
 	if (moveMethod == 'move') {
 		console.log("move")
@@ -513,6 +555,7 @@ document.body.onmousemove = function(event) {
 			item.x = moveX
 		} 
 		leftResize(moveX, moveY)
+		// rightResize
 	} else if (moveMethod == 'rightResize') {
 		rightResize(moveX, moveY)
 	} else if (moveMethod == 'leftTopResize'){
@@ -603,6 +646,8 @@ function rightResize(moveX, moveY) {
 	if (nodeWidth + moveX <= 20) {
 		return
 	}
+	console.log(nodeWidth, moveX, moveWidth)
+	console.log('currentNode:::', currentNode)
 	$(currentNode).css('width', (nodeWidth + moveX) / moveWidth * 101.5 + '%')
 }
 

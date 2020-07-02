@@ -14,7 +14,7 @@ export function addLineX(parent, top, vue){
   }
 
   // 编写生成 dom之前的 标签 <span class='del'> 删除 </span>
-  var line = `<div class="linex select-line" oncontextmenu='rightKey(this, event)' data-cont='x' id='line`+ num +`' style='top: `+ top +`px' onmousedown='lineDown(this, event)'>
+  var line = `<div class="linex select-line tips" oncontextmenu='rightKey(this, event)' data-cont='x' id='line`+ num +`' style='top: `+ top +`px' onmousedown='lineDown(this, event)'>
     
   </div>`
   parent.insertAdjacentHTML('beforeEnd', line)
@@ -25,7 +25,7 @@ export function addLineX(parent, top, vue){
   lineMap.set(vue.tNode.id, vue.tNode)
 
   // 将vue对象 赋值给 that
-  that = vue
+  if(!that) that = vue
   console.log(vue.tNode)
 
 }
@@ -42,7 +42,7 @@ export function addLineY(parent, left, vue){
   }
 
   // 编写生成 dom之前的 标签
-  var line = `<div class="liney select-line" data-cont='y' id='line`+ num +`' style='left: `+ left +`px' onmousedown='lineDown(this, event)'></div>`
+  var line = `<div class="liney select-line tips" data-cont='y' id='line`+ num +`' style='left: `+ left +`px' onmousedown='lineDown(this, event)'></div>`
   parent.insertAdjacentHTML('beforeEnd', line)
 
   // 获取当前创建的 dom 放入vue.tNode中
@@ -51,7 +51,7 @@ export function addLineY(parent, left, vue){
   lineMap.set(vue.tNode.id, vue.tNode)
 
   // 将vue对象 赋值给 that
-  that = vue
+  if(!that) that = vue
   console.log(vue.tNode)
 
 }
@@ -77,6 +77,7 @@ window.lineDown = function (self, e){
     that.oldX = e.screenX
   }
   that.open = true
+  console.log(that.open)
 
   console.log(e)
   del()
@@ -89,8 +90,8 @@ window.rightKey = function (self, e){
 
 console.log(document.querySelector('.rules'))
 
+// 删除 line
 function del(){
-  console.log(1)
   document.querySelector('.rules').onkeydown = function (e){
     e.preventDefault();
     console.log(e)
