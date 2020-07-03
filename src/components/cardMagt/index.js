@@ -123,6 +123,7 @@ export default  {
                 cte: '', // 文本内容
                 defaultCte: '双击更改文本', // 默认内容  /  上一次数据
 
+                img: '', // 
                 curEleCoor: {}
             },
 
@@ -142,7 +143,6 @@ export default  {
                 {label: '阴影样式', name: '阴影样式', select: false},
             ],
             presetLine: [{ type: 'l', site: 50 }, { type: 'v', site: 50 }],
-            aaa: true,
             tc: '',
             curElem: '',
 
@@ -151,14 +151,14 @@ export default  {
 
             tData: { 
                 pageNum: 1,
-                pageSize: 10, // 999
+                pageSize: 5, // 999
                 total: 0,
                 currentPage: 1,
             }, // 表单分页
 
             mData: { 
                 pageNum: 1,
-                pageSize: 10, // 999
+                pageSize: 2, // 999
                 total: 0,
                 currentPage: 1,
             }, // 模板分页
@@ -176,9 +176,21 @@ export default  {
 
             tNode: null,
             wantDelModel: [],  // 需要删除的模板id
+
+            fileName: false, // 
+            multipleSelection: [],
+            fileNameVal: '', // 接收文件 名字
+
+            curModelData: {},
+
+            relevantShow: false
         }
     },
     methods: {
+        // 相关人员 
+        relevantPerson(){
+            this.relevantShow = true
+        },
         // 选择模板 - 勾选复选框
         chioce(item){
             let wDM = this.wantDelModel, 
@@ -211,20 +223,30 @@ export default  {
             var item = this.model__.map(item => item.select && item),
                 selectDom = item.filter(i => i)[0]
             
+            console.log(selectDom)
+
             this.eleList = JSON.parse(selectDom.attr)
+
+            // 填充背景块
+            this.model = JSON.parse(selectDom.publicAttr)
+            // document.querySelector('.box').style.backgroundImage = `url(${this.model.bgimage})`
+
+            // 获保存当前选中模板对象
+            this.curModelData = selectDom
+
             this.editTc = selectDom.content
-            this.modelBox = false
             setTimeout(() => {
                 let textNodes = $("#box").find(".textTemplate");
-                console.log(textNodes)
+                console.log('textNodes',textNodes)
                 for (let i = 0; i < textNodes.length; i++) {
-                    initNode(textNodes[i], this, "文本");
+                    initNode(textNodes[i], this, "文本", true);
                 }
                 let imageNodes = $("#box").find(".imageTemplate");
                 for (let i = 0; i < imageNodes.length; i++) {
-                    initNode(imageNodes[i], this, "图片");
+                    initNode(imageNodes[i], this, "图片", true);
                 }
             }, 300)
+            this.modelBox = false
         },
         // 打开模板
         openModel(){
@@ -245,40 +267,96 @@ export default  {
                 return 
             }
             // 加判断 提示用户是否删除模板
+            this.$confirm('确认删除该模板?', '提示', {
+                cancelButtonClass: 'btn_custom_cancel',
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+            type: 'warning'
+            }).then(() => {
 
+                var id = null
+                var item = this.model__.filter( (item, idx) => {
+                    if(item.select){
+                        id = idx
+                        return item 
+                    } 
+                }),
+                // ids = item.map(item => item.id)
+                ids = this.wantDelModel
+                console.log(item, ids)
+    
+                // return 
+                this.$http.delete('/api/usercenter/personTemplate/ids',{data: ids})
+                    .then(res => {
+                        console.log(res)
+                        if(res.code == '000'){
+                            this.$message.success('删除成功！')
+                            this.model__.splice(id, 1)
+                            this.haveHave = false
+                            this.pageNum = 1
+                            this.getModel()
+    
+                            if(this.model__.length == 0){
+                                this.modelBox = false
+                            }
+                        }
+                    })
+                
+            })
+            
 
-            var id = null
-            var item = this.model__.filter( (item, idx) => {
-                if(item.select){
-                    id = idx
-                    return item 
-                } 
-            }),
-            // ids = item.map(item => item.id)
-            ids = this.wantDelModel
-            console.log(item, ids)
-
-            // return 
-            this.$http.delete('/api/usercenter/personTemplate/ids',{data: ids})
-                .then(res => {
-                    console.log(res)
-                    if(res.code == '000'){
-                        this.$message.success('删除成功！')
-                        this.model__.splice(id, 1)
-                    }
-                })
         },
-        // 保存模板
+        // 去除带有属性的数据
+        removeAttrVal(){
+            var attrName_text = ['userName', 'phone', 'sex'],
+                attrName_img = ['photoFileId'],
+                dom
+
+            // 循环查看是否存在 - 文本
+            for(let i = 0; i < attrName_text.length; i++){
+                dom = document.querySelector('.'+attrName_text[i])
+                if(dom){
+                    dom.innerHTML = dom.innerHTML.replace(dom.innerText, '')
+                }
+            }
+
+            // 循环查看是否存在 - 图片
+            for(let i = 0; i < attrName_img.length; i++){
+                dom = document.querySelector('.'+attrName_img[i])
+                if(dom){
+                    dom.style.backgroundImage = 'url()'
+                }
+            }
+
+        },
+        // 保存模板 去除带有属性的文本
         preservation(){
             // 去除选中样式
             $('.invite-text-box-border').css('display', 'none')
+
+            this.removeAttrVal()
             
             console.dir(this.eleList[0].dom)
             var box = document.querySelector('#box'),
                 // content = JSON.stringify(box.innerHTML),
                 content = JSON.stringify(box.parentNode.innerHTML),
-                attr = JSON.stringify(this.eleList),
-                data = {content, attr, publicAttr: JSON.stringify(this.model)}
+                attr = JSON.stringify(this.eleList)
+            if(content.indexOf('color: rgb(102, 102, 102); display: none;') == -1){
+                // 隐藏尺寸大小
+                content = content.replace('text-align: center; font-size: 15px; color: rgb(102, 102, 102);', 'text-align: center; font-size: 15px; color: rgb(102, 102, 102); display: none;')
+                // 隐藏坐标
+                content = content.replace('class=\\"coordinate\\"', 'class=\\"coordinate\\" style=\\"display: none\\"')
+            }
+
+            console.log(content)
+            // return 
+            var data = {
+                    content, 
+                    attr, 
+                    publicAttr: JSON.stringify(this.model),
+                    personTemplateUserName: '',
+                    userIds: []
+                }
 
             // 更新模板
             if(this.edit_mo){
@@ -286,14 +364,15 @@ export default  {
                 selectDom = item.filter(i => i)[0]
                 data.id = selectDom.id
             }
-            console.log(box.parentNode)
-                // return 
+            console.log(this.eleList)
+            // return 
             this.$http.post('/api/usercenter/personTemplate/personTemplate', data)
                 .then(res => {
                     console.log(res)
                     if(res.code == '000'){
                         this.$message.success('保存成功！')
 
+                        this.curModelData = res.data
                         this.getModel()
                     }
                 })
@@ -316,21 +395,18 @@ export default  {
             console.log(`每页 ${val} 条`);
             this.mData.pageSize = val;
             this.mData.pageNum = 1
-            this.init();
+            this.getModel();
         }, //modelSizeChange
         modelCurrentChange(val) {
             console.log(`当前页: ${val}`);
             this.mData.pageNum = val;
-            this.init();
+            this.getModel();
         }, //modelCurrentChange
         // 设置层级
         setTop(num){
             this.defaultStyle.hierarchy = num
         },
-        // 新建
-        newCreate(){
-            // 加判断 提示是否需要保存当前模板
-
+        newCreatePublic(){
             this.edit_mo = false
             // 删除模板中所有元素
             var parentDom = document.querySelector('.mask'),
@@ -353,6 +429,59 @@ export default  {
 
             console.log(parentDom)
         },
+        // 新建
+        newCreate(){
+            if(this.eleList.length){
+                // 加判断 提示是否需要保存当前模板
+                this.$confirm('是否需要保存模板?', '提示', {
+                    cancelButtonClass: 'btn_custom_cancel',
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    // 保存模板
+                    this.preservation()
+                    this.newCreatePublic()
+
+                }).catch(() => {
+                    this.newCreatePublic()
+                })
+            } else {
+                this.newCreatePublic()
+            }
+            
+        },
+        // 设置出血位
+        setBleedingSite(val){
+            console.log(val)
+            let lt_l = document.querySelector('.mask-leftTop .mask-left')
+            , lt_t = document.querySelector('.mask-leftTop .mask-top')
+            , lb_l = document.querySelector('.mask-leftBottom .mask-left')
+            , lb_b = document.querySelector('.mask-leftBottom .mask-bottom')
+            , rt_r = document.querySelector('.mask-rightTop .mask-right')
+            , rt_t = document.querySelector('.mask-rightTop .mask-top')
+            , rb_r = document.querySelector('.mask-rightBottom .mask-right')
+            , rb_b = document.querySelector('.mask-rightBottom .mask-bottom')
+            
+            
+            // 左上
+            lt_l.style = `width: ${val * 2.5}px; right: ${val * 2.5}px`
+            lt_t.style = `height: ${val * 2.5}px; bottom: ${val * 2.5}px`
+
+            // 左下
+            lb_l.style = `width: ${val * 2.5}px; right: ${val * 2.5}px`
+            lb_b.style = `height: ${val * 2.5}px; top: ${val * 2.5}px`
+
+            // 右上
+            rt_r.style = `width: ${val * 2.5}px; left: ${val * 2.5}px`
+            rt_t.style = `height: ${val * 2.5}px; bottom: ${val * 2.5}px`
+
+            // 右下
+            rb_r.style = `width: ${val * 2.5}px; left: ${val * 2.5}px`
+            rb_b.style = `height: ${val * 2.5}px; top: ${val * 2.5}px`
+
+            console.log(document.querySelectorAll('.mask-leftTop .mask-left'))
+        },
         // 选中单行
         rowClick(e){
             console.log(e)
@@ -371,7 +500,11 @@ export default  {
         },
         // 元素列表 - 选中的元素
         selectDom(item, idx){
-            console.log(item.dom)
+            this.defaultStyle = item
+            this.tNode = item.dom
+            console.log(this.tNode)
+            console.log(this.model.bleedingSite, this.defaultStyle.curEleCoor.x, this.defaultStyle.curEleCoor.y)
+            console.log(this.defaultStyle)
             // if(!arrVarName.get(item.name)){
             //     // this.eleList.filter( (i, index) => idx == index ? i.select = true : i.select = false )
             // }
@@ -387,8 +520,90 @@ export default  {
                 this.$refs.multipleTable.clearSelection();
             }
         },
+        // 绑定模板 - 保存人员
+        preProsons(){
+            // 除去 带有属性的值
+            this.removeAttrVal()
+            
+            console.dir(this.eleList[0].dom)
+            var box = document.querySelector('#box'),
+                content = JSON.stringify(box.parentNode.innerHTML),
+                attr = JSON.stringify(this.eleList)
+
+            if(this.curModelData.id == ''){
+                // 修改一次
+                if(content.indexOf('color: rgb(102, 102, 102); display: none;') == -1){
+                    // 隐藏尺寸大小
+                    content = content.replace('text-align: center; font-size: 15px; color: rgb(102, 102, 102);', 'text-align: center; font-size: 15px; color: rgb(102, 102, 102); display: none;')
+                    // 隐藏坐标
+                    content = content.replace('class=\\"coordinate\\"', 'class=\\"coordinate\\" style=\\"display: none\\"')
+                }
+
+                var data = {
+                    attr,
+                    content,
+                    publicAttr: publicAttr,
+                    personTemplateUserName: this.fileNameVal,
+                    userIds: this.multipleSelection.map(item => item.id)
+                }
+                
+
+                // 更新模板
+                if(this.edit_mo){
+                    var item = this.model__.map(item => item.select && item),
+                    selectDom = item.filter(i => i)[0]
+                    data.id = selectDom.id
+                }
+
+                this.$http.post('/api/usercenter/personTemplate/personTemplate', data)
+                    .then(res => {
+                        console.log(res)
+                        if(res.code == '000'){
+                            this.$message.success('保存成功！')
+
+                            this.getModel()
+                            this.fileName = false
+                        }
+                    })
+            } else {
+                
+                this.$http.post(`/api/usercenter/personTemplateUser/personTemplateUsers/personTemplateIdAndUserIds/${this.curModelData.id}?personTemplateUserName=${this.fileNameVal}`, this.multipleSelection.map(item => item.id))
+                    .then(res => {
+                        console.log(res)
+                        if(res.code == '000'){
+                            this.$message.success('保存成功！')
+
+                            this.getModel()
+                            this.fileName = false
+                        }
+                    })
+            }
+
+        },
+        // 数据验证
+        verification(){
+            if(!this.eleList.length){
+                this.$message.error('请选设计模板！')
+                return
+            }
+
+            if(!this.multipleSelection.length){
+                this.$message.error('请选勾选需要添加的人员！')
+                return
+            }
+
+            if(this.curModelData.id){
+                this.fileNameVal = this.curModelData.personTemplateUsers[0].name
+                this.preProsons()
+            } else {
+                this.fileName = true
+            }
+        },
+        // 勾选表单 获取勾选数据 
         handleSelectionChange(val) {
             this.multipleSelection = val;
+
+            console.log(val)
         },
         // 模板 - 选择颜色
         colorSelect(e){
@@ -424,10 +639,9 @@ export default  {
                         // 去除 '双击选择图片' 字样  --  选中 photoFileId 属性
                         if(item.dom.innerText == '双击选择图片'){
                             var lang = this.eleList.length
-                            console.dir(item.dom)
                             // 将 '双击选择图片' 隐藏  且 选中属性后选择图片, 将清空地址
                             item.dom.innerHTML = item.dom.innerHTML.replace('>双击选择图片<', '><')
-                            if(document.querySelectorAll('.photoFileId')){
+                            if(document.querySelectorAll('.photoFileId').length){
                                 document.querySelectorAll('.photoFileId')[1].style.backgroundImage = 'url()'
                             }
 
@@ -527,8 +741,8 @@ export default  {
             //从nodeStyleMap获取该node的样式，否则解析节点  填充属性
             this.tNode = node;
             console.dir(this.tNode)
-            var defaultStyle = nodeStyleMap.get(node.id);
-            if (defaultStyle === undefined) {
+            var defaultStyle = nodeStyleMap.get(node.id) || this.defaultStyle;
+            if (defaultStyle === 'undefined') {
                 // 初始化样式值    defaultStyle代表当前选中控件的所有属性,当回显保存数据的时候这个对象是空的,所以需要在此初始化
                 defaultStyle = {};
                 defaultStyle.textColor = $(node).css("color");
@@ -601,7 +815,7 @@ export default  {
                 }
                 nodeStyleMap.set(node.id, defaultStyle);
             }
-            this.defaultStyle = defaultStyle;
+            // this.defaultStyle = defaultStyle;
             if ($(node).hasClass("imageTemplate")) {
                 this.isImage = true;
             } else {
@@ -703,6 +917,9 @@ export default  {
                 this.defaultStyle.shadowColor;
             $(this.tNode).css("box-shadow", shadow);
             $(this.tNode).css("box-shadow", shadow);
+
+            // 更新数据
+            this.mergeData()
         }, //setShadow
         // 获取css 属性值
         getCssVal(dom, key){
@@ -710,7 +927,21 @@ export default  {
 
             return computedStyle[key]
         },
+        
+        // 匹配 defaultStyle 与 eleList 合并数据
+        mergeData(){
+            let defaultStyle = this.defaultStyle,
+                eleList = this.eleList
 
+            eleList.filter(item => {
+                if(item.id == defaultStyle.id){
+                    for(let i in defaultStyle){
+                        item[i] = defaultStyle[i]
+                    }
+                }
+            })
+
+        },
 
         // 请求接口
         init: function() {
@@ -778,7 +1009,7 @@ export default  {
         getModel(){
             let _this = this
 
-            this.$http.get(`/api/usercenter/personTemplate/page?pageNum=${1}&pageSize=${3}`)
+            this.$http.get(`/api/usercenter/personTemplate/page?pageNum=${this.mData.pageNum}&pageSize=${this.mData.pageSize}`)
             .then( res => {
                 console.log(res)
                 if(res.code = '000'){
@@ -789,7 +1020,7 @@ export default  {
                     })
                     this.model__ = data.content
                     _this.mData.total = data.totalElements
-                    _this.mData.pageNum = data.totalPages
+                    // _this.mData.pageNum = data.totalPages
                     console.log(this.model__)
                 } else {
                     _this.mData.totalCount = 0;
@@ -816,22 +1047,34 @@ export default  {
         "defaultStyle.fontFamily": function(val) {
             this.defaultStyle.fontFamily = val
             $(this.tNode).css("font-family", val);
+
+            // 更新数据
+            this.mergeData()
         },
         //监听defaultStyle下的fontSize，即字体大小
         "defaultStyle.fontSize": function(val) {
             this.defaultStyle.fontSize = val
             $(this.tNode).css("font-size", val);
+        
+            // 更新数据
+            this.mergeData()
         },
         //监听defaultStyle下的fontSize，即字体距离
         "defaultStyle.lineSpa": function(val) {
             this.defaultStyle.lineSpa = val
             $(this.tNode).css("letter-spacing", val);
+
+            // 更新数据
+            this.mergeData()
         },
 
         "defaultStyle.lineHeight": function(val) {
             console.log(this.tNode)
             this.defaultStyle.lineHeight = val
             $(this.tNode).css("lineHeight", val / 10);
+
+            // 更新数据
+            this.mergeData()
         },
         "defaultStyle.opacity": function(val) {
             if (val <= 1) {
@@ -839,10 +1082,16 @@ export default  {
             }
             this.defaultStyle.opacity = val
             $(this.tNode).css("opacity", val / 100);
+
+            // 更新数据
+            this.mergeData()
         },
         "defaultStyle.textAlign": function(val) {
             this.defaultStyle.textAlign = val
             $(this.tNode).css("text-align", val);
+
+            // 更新数据
+            this.mergeData()
         },
 
         "defaultStyle.fontWeight": function(val) {
@@ -879,18 +1128,27 @@ export default  {
         "defaultStyle.borderStyle": function(val) {
             this.defaultStyle.borderStyle = val
             $(this.tNode).css("border-style", val);
+
+            // 更新数据
+            this.mergeData()
         },
 
         //监听defaultStyle下的fontSize，即字体大小
         "defaultStyle.borderWidth": function(val) {
             this.defaultStyle.borderWidth = val
             $(this.tNode).css("border-width", val);
+
+            // 更新数据
+            this.mergeData()
         },
 
         //监听defaultStyle下的fontSize，即字体大小
         "defaultStyle.borderRadius": function(val) {
             this.defaultStyle.borderRadius = val
             $(this.tNode).css("border-radius", val);
+
+            // 更新数据
+            this.mergeData()
         },
 
         "defaultStyle.shadowDim": function() {
@@ -898,7 +1156,7 @@ export default  {
         },
         "defaultStyle.shadowWidth": function(val) {
             if (val == 0) {
-                $(this.tNode).css("box-shadow", "0px 0px ");
+                $(this.tNode).css("box-shadow", "0px 0px");
             } else {
                 this.setShadow();
             }
@@ -932,6 +1190,9 @@ export default  {
 
             this.defaultStyle.hierarchy = val
             $(this.tNode).css("z-index", val);
+
+            // 更新数据
+            this.mergeData()
         },
 
         // 变量名  只有添加变量名 select为 true
@@ -965,6 +1226,8 @@ export default  {
             this.tNode.classList.add(val)
 
             console.log(this.eleList)
+            // 更新数据
+            this.mergeData()
         },
         "varName": function(val) {
             // 去重
@@ -979,6 +1242,9 @@ export default  {
             if(!val) return
             // 在选中的dom 增加class 属性值
             this.tNode.classList.add(val)
+
+            // 更新数据 - eleList
+            this.mergeData()
         },
 
         // 监听图片元素位置大小 宽度 高度 上边距 左边距
@@ -986,6 +1252,9 @@ export default  {
             this.defaultStyle.width = val * 5
             
             $(this.tNode).css("width", val * 5 + 'px');
+
+            // 更新数据 - eleList
+            this.mergeData()
         }, // width
         "img.height": function(val) {
             this.defaultStyle.height = val * 5
@@ -1006,13 +1275,19 @@ export default  {
 
         // 监听文本元素位置大小 宽度 高度 上边距 左边距
         "defaultStyle.width": function(val) {
-            // this.defaultStyle.width = val * 5
+            this.defaultStyle.width = val
 
             $(this.tNode).css("width", val * 5 + 'px');
+
+            // 更新数据 - eleList
+            this.mergeData()
         }, // width
         "defaultStyle.height": function(val) {
-            // this.defaultStyle.height = val * 5
+            this.defaultStyle.height = val 
             $(this.tNode).css("height", val * 5 + 'px');
+
+            // 更新数据 - eleList
+            this.mergeData()
         }, // height
         "text.paddingT": function(val) {
             console.log(this.defaultStyle)
@@ -1043,6 +1318,9 @@ export default  {
         
             // 覆盖上一次修改的数据
             this.defaultStyle.defaultCte = val
+
+            // 更新数据 - eleList
+            this.mergeData()
         },
         // 缩放比例
         'model.bl': function(val) {

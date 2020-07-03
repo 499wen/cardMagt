@@ -13,9 +13,10 @@ export function addLineX(parent, top, vue){
     selectLine.classList.remove('select-line')
   }
 
-  // 编写生成 dom之前的 标签 <span class='del'> 删除 </span>
-  var line = `<div class="linex select-line tips" oncontextmenu='rightKey(this, event)' data-cont='x' id='line`+ num +`' style='top: `+ top +`px' onmousedown='lineDown(this, event)'>
-    
+  // 编写生成 dom之前的 标签 <span class='del'> 删除 </span>  layerX  layerY
+  var line = `<div class="linex select-line tips" oncontextmenu='rightKey(this, event, "line")' data-cont='x' id='line`+ num +`' style='top: `+ top +`px' onmousedown='lineDown(this, event)'>
+    <div class='line-x-box' ></div>
+    <div class='line-func' style='top: 0px; left: calc(90% + 10px)' onclick='del(event, this)'>删除</div>
   </div>`
   parent.insertAdjacentHTML('beforeEnd', line)
 
@@ -28,6 +29,10 @@ export function addLineX(parent, top, vue){
   if(!that) that = vue
   console.log(vue.tNode)
 
+  // 阻止浏览器右键显示
+  document.querySelector('.rules').oncontextmenu = () => {
+    return false
+  }
 }
 
 // 新增一条线 - 竖
@@ -42,7 +47,10 @@ export function addLineY(parent, left, vue){
   }
 
   // 编写生成 dom之前的 标签
-  var line = `<div class="liney select-line tips" data-cont='y' id='line`+ num +`' style='left: `+ left +`px' onmousedown='lineDown(this, event)'></div>`
+  var line = `<div class="liney select-line tips" data-cont='y' id='line`+ num +`' style='left: `+ left +`px' onmousedown='lineDown(this, event)'>
+    <div class='line-y-box'></div>
+    <div class='line-func' style='left: 0px; top: calc(90% + 10px)' onclick='del(event, this)'>删除</div>
+  </div>`
   parent.insertAdjacentHTML('beforeEnd', line)
 
   // 获取当前创建的 dom 放入vue.tNode中
@@ -54,6 +62,10 @@ export function addLineY(parent, left, vue){
   if(!that) that = vue
   console.log(vue.tNode)
 
+  // 阻止浏览器右键显示
+  document.querySelector('.rules').oncontextmenu = () => {
+    return false
+  }
 }
 
 // 鼠标点击 线
@@ -80,29 +92,38 @@ window.lineDown = function (self, e){
   console.log(that.open)
 
   console.log(e)
-  del()
 } 
 
-window.rightKey = function (self, e){
-  e.preventDefault();
-  // document.querySelector('.del').style.display = 'inline'
+window.rightKey = function (self, e, type){
+  // 找到属于当前 line 的.line-func dom  left位置  循环对象
+  var dom = null, x = null, forArr = null
+  console.log(type)
+
+  if(type == 'line'){
+    forArr = self.childNodes
+    x = e.layerX
+
+    for(let i of forArr){
+      if(i.classList && i.classList.contains('line-func')){
+        dom = i
+        break
+      }
+    }
+    
+  }
+  dom.style.left = x + 'px'
+  dom.style.display = 'block'
+
 }
 
 console.log(document.querySelector('.rules'))
 
 // 删除 line
-function del(){
-  document.querySelector('.rules').onkeydown = function (e){
-    e.preventDefault();
-    console.log(e)
-    
-    if(that && that.tNode){
-      if(e.code ==  "Backspace"){
-        // console.log(this.tNode, this.tNode.parentNode)
-        that.tNode.parentNode.removeChild(that.tNode)
-      }
-    }
-  }
+window.del = function (e, self){
+  e.preventDefault();
+  
+  // 删除
+  e.path[1].parentNode.removeChild(e.path[1])
 }
 
 
@@ -114,3 +135,5 @@ window.uuid = function () {
 		return v.toString(16);
 	});
 }
+
+

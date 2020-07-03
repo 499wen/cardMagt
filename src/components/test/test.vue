@@ -1,7 +1,11 @@
 <template>
-  <div class="right-body">
+  <div class="right-body" >
 
-    <div class="rules" @mousemove="move($event)" @mouseup="up($event)" @keydown="keyDown($event)" style="user-select: none;">
+    <div class="rules" @mousemove="move($event)" @mouseup="up($event)" style="user-select: none;">
+      <div class="empty-x"></div>
+      <div class="empty-y"></div>
+      <div class="clear" title="清空提示线" @click.self='clearLine'></div>
+
       <!-- 卡尺 - x -->
       <div class="rules-x" @mousedown.self="xDown($event)">
         <span class="ruler-x-n" v-for="item in 100" :style="{'left': (item - 1) * 50 + 2 + 'px'}" :key="item">{{ (item - 1) * 10 }}</span>
@@ -35,14 +39,25 @@ export default {
   data() { 
     return {
       curObj: {},
-      tNode: null,
-      open: null,
-      oldY: null,
-      oldX: null,
+      tNode: null, // 当前选中的line dom
+      open: null, // 可移动开关
+      oldY: null, // 记录旧 y值
+      oldX: null, // 记录旧 x值
       switch: null // y: 左右拖动 line x: 上下拖动 line
     }
   }, 
   methods: {
+    // 清空所有提示线
+    clearLine(){
+      console.log(document.querySelectorAll('.tips'))
+      // 所有line dom
+      var allLineDom = document.querySelectorAll('.tips')
+
+      // 删除
+      for(let item of allLineDom){
+        item.parentNode.removeChild(item)
+      }
+    },
     // 鼠标按下 - x
     xDown(e){
       console.log(e)
@@ -51,7 +66,7 @@ export default {
       this.switch = 'x'
 
       // 创建 横 - line 
-      addLineX(e.path[0], e.offsetY, this)
+      addLineX(e.path[1], e.offsetY, this)
     }, 
     // 鼠标按下 - y
     yDown(e){
@@ -61,7 +76,7 @@ export default {
       this.switch = 'y'
 
       // 创建 横 - line 
-      addLineY(e.path[0], e.offsetX, this)
+      addLineY(e.path[1], e.offsetX, this)
     }, 
     // 鼠标移动
     move(e){
@@ -95,10 +110,6 @@ export default {
     up(e){
       this.open = false
     },
-    // 按键事件
-    keyDown(e){
-      console.log(e)
-    }
   }
 }
 
@@ -116,17 +127,29 @@ export default {
     width: 100%;
     height: 100%;
     position: relative;
+    overflow: hidden;
   }
 
   .rules-x {
     position: absolute;
     left: 38px;
+    z-index: 100;
     // overflow-x: hidden;
     top: 10px;
     cursor: pointer;
     width: calc(100% - 40px);
     height: 18px;
     background: url('../../assets/ruler.png') repeat-x;
+  }
+
+  .empty-x {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 50;
+    width: 100%;
+    height: 28px;
+    background-color: #fff;
   }
 
   .ruler-x-n {
@@ -140,11 +163,22 @@ export default {
   .rules-y {
     position: absolute;
     top: 38px;
+    z-index: 100;
     cursor: pointer;
     left: 10px;
     height: calc(100% - 40px);
     width: 18px;
     background: url('../../assets/ruler-y.png') repeat-y;
+  }
+
+  .empty-y {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 50;
+    height: 100%;
+    width: 28px;
+    background-color: #fff;
   }
 
   .ruler-y-n {
@@ -164,38 +198,85 @@ export default {
     // background-color: #fff;
   }
 
+  .clear {
+    width: 10px;
+    height: 10px;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #ccc;
+    z-index: 51;
+    cursor: pointer;
+  }
+
 </style>
 
 <style>
   .linex {
     position: absolute;
     bottom: 0;
-    left: -38px;
-    width: calc(100% + 38px);
+    left: 0;
+    width: 100%;
     height: 1px;
     background-color: #000;
-    z-index: 99;
-    cursor: pointer;
+    z-index: 30;
+    cursor: move;
+  }
+
+  .line-x-box {
+    position: absolute;
+    left: 90%;
+    top: -10px;
+    height: 21px;
+    width: 10px;
+    background-color: inherit;
   }
 
   .liney {
     position: absolute;
     left: 0;
-    top: -38px;
-    height: calc(100% + 38px);
+    top: 0;
+    height: 100%;
     width: 1px;
     background-color: #000;
-    z-index: 99;
-    cursor: pointer;
+    z-index: 30;
+    cursor: move;
   }
 
+  .line-y-box {
+    position: absolute;
+    top: 90%;
+    left: -10px;
+    width: 21px;
+    height: 10px;
+    background-color: inherit;
+  }
 
   .linex:hover {
     background-color: rgb(153, 28, 28);
   }
 
+  .liney:hover {
+    background-color: rgb(153, 28, 28);
+  }
+
   .select-line {
     background-color: rgb(153, 28, 28);
+  }
+
+  .line-func {
+    box-shadow: 1px 1px 5px 1px #ccc;
+    padding: 3px;
+    width: 30px;
+    font-size: 14px;
+    color: #666;
+    position: absolute;
+    display: none;
+    cursor: pointer;
+  }
+
+  .linex:hover .line-func, .liney:hover .line-func {
+    display: block;
   }
 
   .del {

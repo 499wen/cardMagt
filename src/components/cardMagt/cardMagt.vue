@@ -34,11 +34,12 @@
  
                 <!-- 数据填充 -->
                 <div class="operation" v-show="headerTag[1].select">
-                    <el-button size="mini" >保存人员</el-button>
+                    <el-button size="mini" v-if="eleList.length" @click="relevantPerson">相关人员</el-button>
+                    <el-button size="mini" v-if="eleList.length" @click="verification">保存人员</el-button>
                 </div>
             </div>
 
-            <!-- 模板制作 -->
+            <!-- 样式设计 -->
             <div class="model-make" v-show="headerTag[0].select">
                 <!-- 上部分 -->
                 <!-- <div class="model-make-top">
@@ -52,44 +53,49 @@
 
                         <Test>
                             <div class="box" id="box"
+                                @dblclick.self='modelShow = true'
+                                v-if="!edit_mo"
                                 :style="{'width': model.width * 5 + 'px', 'height': model.height * 5 + 'px', 'padding': model.bleedingSite * 5 + 'px', 'background-color': model.bgcolor}"
                              >
                                 <div 
-                                    v-if="!edit_mo"
                                     class="mask phone-item" 
+                                    @dblclick.self='modelShow = true'
                                     @drop="dropTest($event)" @dragover="allowDrop($event)"
                                     >
                                 
                                     <!-- 四个方向的出血点 -->
-                                    <div class="mask-leftTop mask-direction">
+                                    <div class="mask-leftTop mask-direction" @dblclick='modelShow = true'>
                                         <div class="mask-left" :style="{width: model.bleedingSite * 2.5 + 'px', right: model.bleedingSite * 2.5 + 'px'}"></div>
                                         <div class="mask-top" :style="{height: model.bleedingSite * 2.5 + 'px', bottom: model.bleedingSite * 2.5 + 'px'}"></div>
                                     </div>
-                                    <div class="mask-leftBottom mask-direction">
+                                    <div class="mask-leftBottom mask-direction" @dblclick='modelShow = true'>
                                         <div class="mask-left" :style="{width: model.bleedingSite * 2.5 + 'px', right: model.bleedingSite * 2.5 + 'px'}"></div>
                                         <div class="mask-bottom" :style="{height: model.bleedingSite * 2.5 + 'px', top: model.bleedingSite * 2.5 + 'px'}"></div>
                                     </div>
-                                    <div class="mask-rightTop mask-direction">
+                                    <div class="mask-rightTop mask-direction" @dblclick='modelShow = true'>
                                         <div class="mask-right" :style="{width: model.bleedingSite * 2.5 + 'px', left: model.bleedingSite * 2.5 + 'px'}"></div>
                                         <div class="mask-top" :style="{height: model.bleedingSite * 2.5 + 'px', bottom: model.bleedingSite * 2.5 + 'px'}"></div>
                                     </div>
-                                    <div class="mask-rightBottom mask-direction">
+                                    <div class="mask-rightBottom mask-direction" @dblclick='modelShow = true'>
                                         <div class="mask-right" :style="{width: model.bleedingSite * 2.5 + 'px', left: model.bleedingSite * 2.5 + 'px'}"></div>
                                         <div class="mask-bottom" :style="{height: model.bleedingSite * 2.5 + 'px', top: model.bleedingSite * 2.5 + 'px'}"></div>
                                     </div>
                                 </div>
 
-                                <div 
-                                    v-else 
-                                    v-html="editTc"
-                                    class="mask phone-item" 
-                                    @drop="dropTest($event)" @dragover="allowDrop($event)"
-                                    >
-                                </div> 
                             </div>
+
+                            <div 
+                                v-else 
+                                v-html="editTc"
+                                :style="{'width': model.width * 5 + 'px', 'height': model.height * 5 + 'px', 'padding': model.bleedingSite * 5 + 'px', 'background-color': model.bgcolor, 'box-sizing': 'unset'}"
+                                class="mask phone-item box" 
+                                @drop="dropTest($event)" @dragover="allowDrop($event)"
+                                >
+                            </div> 
 
                             <!-- 标识模板尺寸 -->
                             <div 
+                                class="t-p-o"
                                 :style="{
                                     'width': model.width * 5 + 'px',
                                     'margin-top': '10px', 
@@ -113,7 +119,7 @@
                     <!-- 右侧部分 -->
                     <div class="model-make-right">
                         <div style="width: 200px; height: 100%">
-                            <div class="ele-list" onclick='aaa()'>元素列表</div>
+                            <div class="ele-list" >元素列表</div>
                             <div class="ele-single">
                                 <div v-for="(item, idx) in eleList" :key="idx">
                                     
@@ -137,7 +143,7 @@
                 </div>
             </div>
 
-            <!-- 样式设计 -->
+            <!-- 数据填充 -->
             <div v-show="headerTag[1].select" class="model-make" style="display: flex">
                 <div class="model-make-center" style="width: 65%">
                     <Test> 
@@ -145,7 +151,7 @@
                     </Test>
                 </div>
                 
-                <div class="" style="width: 35%; height: 100%; text-align: center">
+                <div class="" style="width: 35%; height: 100%; text-align: center; z-index: 999">
                     <!-- 表格 -->
                     <div class="table" >
                         <el-table
@@ -167,7 +173,7 @@
                             >
                                 <template slot-scope="scope">
                                     <div v-if="item.scription == 'photoFileId'">
-                                        {{ '/api/filecenter/file/file/' + scope.row[item.scription] }}
+                                        {{ scope.row[item.scription] ? '/api/filecenter/file/file/' + scope.row[item.scription] : '无相片' }}
                                         <!-- <img :src="'/api/filecenter/file/file/'+ scope.row[item.scription]" width="30" height='30'/> -->
                                     </div>
                                     <div v-else>{{ scope.row[item.scription] }}</div>
@@ -654,8 +660,8 @@
                     </el-collapse>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button size="mini" @click="imgShow = false">取 消</el-button>
                     <el-button size="mini" type="primary" @click="imgShow = false">确 定</el-button>
+                    <el-button size="mini" @click="imgShow = false">取 消</el-button>
                 </span>
             </el-dialog>
             <!-- 图片双击后 修改弹框 end -->
@@ -663,7 +669,7 @@
             <!-- 模板功能 - start -->
             <!-- <div class="musk" v-show="modelShow"> -->
             <el-dialog
-                title="提示"
+                title="底板定义"
                 :visible.sync="modelShow"
                 width="30%"
                 center
@@ -689,17 +695,16 @@
                         <li class="model-single">
                             <span>出血位:</span>
                             <div class="value">
-                                <el-input style="width: 80px" size="mini" v-model="model.bleedingSite"></el-input>
+                                <el-input style="width: 80px" size="mini" @input="setBleedingSite" v-model="model.bleedingSite"></el-input>
                             </div>
                         </li>
                         <li class="model-single">
                             <span>缩放比例:</span>
                             <el-select v-model="model.bl" class="option" size="mini" style="margin-left: -5px;width:97px;">
                                     <el-option value="50%" label="50%"></el-option>
-                                    <el-option value="75%" label="75%"></el-option>
                                     <el-option value="100%" label="100%"></el-option>
-                                    <el-option value="125%" label="125%"></el-option>
                                     <el-option value="150%" label="150%"></el-option>
+                                    <el-option value="150%" label="200%"></el-option>
                             </el-select>
                         </li>
                         <li class="model-single" style="align-items: flex-start">
@@ -737,8 +742,8 @@
                 </div>
 
                 <span slot="footer" class="dialog-footer">
-                    <el-button size="mini" @click="modelShow = false">取 消</el-button>
                     <el-button size="mini" type="primary" @click="modelShow = false">确 定</el-button>
+                    <el-button size="mini" @click="modelShow = false">取 消</el-button>
                 </span>
             </el-dialog>
             <!-- </div> -->
@@ -748,8 +753,9 @@
             <el-dialog
                 title="选择模板"
                 :visible.sync="modelBox"
-                width="90%"
+                width=""
                 center
+                class="chioceM"
                 >
                 <div class="modelBox-nav">
                     <el-button size='mini' @click="delModel">删除模板</el-button>
@@ -793,8 +799,53 @@
             </el-dialog>
             <!-- 选择模板 - end -->
 
-            <!-- 提示信息 -->
+            <!-- 提示信息 - 保存文件设置名字 -->
+            <el-dialog
+                title="提示"
+                :visible.sync="fileName"
+                width="30%"
+                center>
+                <el-input v-model="fileNameVal" placeholder="请输入保存后的名字"></el-input>
+                <span slot="footer" class="dialog-footer">
+                    <el-button type="primary" @click="preProsons">确 定</el-button>
+                    <el-button @click="fileName = false">取 消</el-button>
+                </span>
+            </el-dialog>
 
+            <!-- 相关人员 - 表格 -->
+            <el-dialog
+                title="相关人员"
+                :visible.sync="relevantShow"
+                width=""
+                center
+                class="chioceM"
+                >
+                <div class="modelBox-nav">
+                    <el-button size='mini' @click="delModel">删除模板</el-button>
+                    <el-button size='mini' v-if="haveHave" @click="editModel">编辑模板</el-button>
+                </div>
+
+                <div class="table">
+
+                </div>
+                <!-- <div class="page" style="height: auto; padding-top: 20px;">
+                    <el-pagination
+                        background
+                        size='mini'
+                        @size-change="modelSizeChange"
+                        @current-change="modelCurrentChange"
+                        :current-page="mData.currentPage"
+                        :page-sizes="[30, 60, 90]"
+                        :page-size="mData.pageSize"
+                        layout="total, prev, pager, next"
+                        :total="mData.total">
+                    </el-pagination>
+                </div>  -->
+                <span slot="footer" class="dialog-footer">
+                    <el-button size='mini' @click="relevantShow = false">取 消</el-button>
+                    <el-button size="mini" type="primary" @click="relevantShow = false">确 定</el-button>
+                </span>
+            </el-dialog>
         </div>
     </div>
 </template>
@@ -977,6 +1028,15 @@ export default CardMagt;
     background-color: #054592 !important;
     /* color: #054592 !important; */
     border-color: #054592 !important;
+}
+
+.btn_custom_cancel{
+    float: right;
+    margin-left: 10px;
+}
+
+.chioceM > div {
+    width: 1180px !important;
 }
 
 </style>
