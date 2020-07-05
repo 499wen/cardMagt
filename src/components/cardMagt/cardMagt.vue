@@ -88,8 +88,9 @@
                                 v-else 
                                 v-html="editTc"
                                 :style="{'width': model.width * 5 + 'px', 'height': model.height * 5 + 'px', 'padding': model.bleedingSite * 5 + 'px', 'background-color': model.bgcolor, 'box-sizing': 'unset'}"
-                                class="mask phone-item box" 
-                                @drop="dropTest($event)" @dragover="allowDrop($event)"
+                                class="mask phone-item box" id="edit" 
+                                @dblclick.self='modelShow = true'
+                                  @drop="dropTest($event)" @dragover="allowDrop($event)"
                                 >
                             </div> 
 
@@ -821,12 +822,23 @@
                 class="chioceM"
                 >
                 <div class="modelBox-nav">
-                    <el-button size='mini' @click="delModel">删除模板</el-button>
-                    <el-button size='mini' v-if="haveHave" @click="editModel">编辑模板</el-button>
+                    <el-button size='mini' @click="delModelPerson">删除人员</el-button>
+                    <!-- <el-button size='mini' v-if="haveHave" @click="editModel">编辑模板</el-button> -->
                 </div>
 
                 <div class="table">
+                    <el-table
+                        ref="multipleTable"
+                        :data="relevantUser"
+                        tooltip-effect="dark"
+                        style="width: 100%"
+                        border
+                        @selection-change="relevantChange">
 
+                        <el-table-column border type="selection" width="55"> </el-table-column>
+                        <el-table-column border v-for="(item, idx) in tableCate" :key="idx" :prop="item.scription" :label="item.name" > </el-table-column>
+
+                    </el-table>
                 </div>
                 <!-- <div class="page" style="height: auto; padding-top: 20px;">
                     <el-pagination
@@ -842,8 +854,8 @@
                     </el-pagination>
                 </div>  -->
                 <span slot="footer" class="dialog-footer">
-                    <el-button size='mini' @click="relevantShow = false">取 消</el-button>
-                    <el-button size="mini" type="primary" @click="relevantShow = false">确 定</el-button>
+                    <el-button size='mini' @click="relevantShow = false">关 闭</el-button>
+                    <!-- <el-button size="mini" type="primary" @click="relevantShow = false">确 定</el-button> -->
                 </span>
             </el-dialog>
         </div>

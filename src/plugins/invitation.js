@@ -246,7 +246,7 @@ export function drop(event, _this, type = false) {
 	// })
 
 	// 给控件绑定鼠标按下的事件
-	$(node).dblclick( function (e){
+	$(node).dblclick( function (e){ 
 		_this.imgShow = true
 		_this.modelShow = false
 		console.log(defaultStyle)
@@ -409,6 +409,20 @@ export function initNode(node, _this,text, bool = false) {
 		})
 		
 		// that.tNode = node
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
 		// console.log(that.tNode)
 		console.log("mouseIsDown = " + mouseIsDown)
 		mouseIsDown = true;

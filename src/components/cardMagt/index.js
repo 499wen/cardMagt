@@ -183,13 +183,49 @@ export default  {
 
             curModelData: {},
 
-            relevantShow: false
+            relevantShow: false,
+            relevantUser: [],
+            relevantArr: []
         }
     },
     methods: {
+        delModelPerson(e){
+            if(this.relevantArr.length == 0){
+                this.$message('请先勾选人员！')
+                return 
+            }
+
+            console.log(this.relevantArr)
+            var ids = this.relevantArr.map(item => item.tempUserId),
+                arr = this.relevantUser.map((item, idx) => {
+                    if(ids.includes(item.tempUserId)){ 
+                        return idx 
+                    }
+                }).filter(item => item != undefined)
+            
+            console.log(arr)
+
+            this.$http.delete('/api/usercenter/personTemplateUser/personTemplateUsers', {data: ids}).
+                then(res => {
+                    console.log(res)
+                    if(res.code == '000'){
+                        this.$message.success('删除成功！')
+
+                        // 删除本地数据
+                        arr.sort(function(a, b) { return b - a});
+                        arr.forEach((index) => { this.relevantUser.splice(index, 1) })
+                        console.log(this.relevantUser)
+                    }
+                })
+        },
+        // 相关人员表格 - 勾选表格
+        relevantChange(arr){
+            this.relevantArr = arr
+        },
         // 相关人员 
         relevantPerson(){
             this.relevantShow = true
+            console.log(this.relevantUser)
         },
         // 选择模板 - 勾选复选框
         chioce(item){
@@ -233,6 +269,12 @@ export default  {
 
             // 获保存当前选中模板对象
             this.curModelData = selectDom
+            this.relevantUser = []
+            selectDom.personTemplateUsers.map(item => {
+                item.user.tempUserId = item.id
+                this.relevantUser.push(item.user)
+            })
+
 
             this.editTc = selectDom.content
             setTimeout(() => {
@@ -247,6 +289,14 @@ export default  {
                 }
             }, 300)
             this.modelBox = false
+
+            setTimeout(() => {
+                // 给编辑底板增加双击事件
+                console.log(document.querySelector('#edit .mask'))
+                document.querySelector('#edit .mask').ondblclick = () => {
+                    this.modelShow = true
+                }
+            }, 500)
         },
         // 打开模板
         openModel(){
@@ -628,7 +678,7 @@ export default  {
                 this.attrArr = []
                 
                 // 选中框dom
-                var none = document.querySelectorAll('.i-t-b-border')
+                var none = document.querySelectorAll('.invite-text-box-border')
 
                 console.log(none)
                 // 数据填充
