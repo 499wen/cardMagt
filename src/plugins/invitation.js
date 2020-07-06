@@ -230,7 +230,51 @@ export function drop(event, _this, type = false) {
 			}
 		_this.initTemplateCss(this)
 
+		node.oncontextmenu = (e) => {
+			let self = e.path[0]
+			if(self.dataset.delete == 'true'){
+				return 
+			}
+			console.log(e.layerX, e.layerY)
+			var delDom = document.createElement('div')
+			delDom.innerText = '删除'
+			delDom.style = `
+				font-size: 15px;
+				color: #333;
+				padding: 5px 10px;
+				box-shadow: 1px 1px 5px 1px #eee;
+				position: absolute;
+				top: ${e.layerY / 5}px;
+				left: ${e.layerX / 5}px;
+				z-index: 9999999;
+				background-color: #fff;
+				cursor: pointer
+			`
+			delDom.onclick = function() {
+				var box = document.querySelector('.mask')
+				// 删除 eleList 钟的数据
+				that.eleList.filter( (item, idx, arr) => {
+						if(item.nodeKey == that.tNode.dataset.cont){
+							arr.splice(idx, 1)
+						}
+				}) 
+
+				console.log(box)
+				box.removeChild(that.tNode)
+				console.log(e.path[2])
+			}
+
+			self.appendChild(delDom)
+			self.dataset.delete = 'true'
+			console.log('右键')
+		}
+
 		console.log('eleList, defaultStyle ----- ', that.defaultStyle, that.eleList)
+
+		// 阻止浏览器右键显示
+		document.querySelector('.rules').oncontextmenu = () => {
+			return false
+		}
 		// 更新数据
 		that.mergeData()
 		// mous(e)
@@ -380,6 +424,10 @@ export function initNode(node, _this,text, bool = false) {
 		console.log(node)
 		$(node).find('.invite-text-box-border').css('display', 'block')
 		_this.initTemplateCss(node)
+
+		node.oncontextmenu = () => {
+			console.log('右键2')
+		}
 		
 		if(_this.activeName.length === 0){
 			_this.activeName.push("1")
@@ -409,20 +457,6 @@ export function initNode(node, _this,text, bool = false) {
 		})
 		
 		// that.tNode = node
-
-
-
-
-
-
-
-
-
-
-
-
-
-		
 		// console.log(that.tNode)
 		console.log("mouseIsDown = " + mouseIsDown)
 		mouseIsDown = true;
@@ -710,6 +744,18 @@ function rightBottomResize(moveX, moveY) {
 	$(currentNode).css('width', (nodeWidth + moveX) / moveWidth * 101.5 + '%')
 	$(currentNode).css('height', (nodeHeight + moveY) + 'px')
 }
+
+document.onclick = function (e) {
+	var e = e || window.event;  //标准化事件对象
+	var t = e.target || e.srcElement;  //获取发生事件的元素，兼容IE和DOM
+
+	// console.log(t)
+	// return 
+	if (e.ctrlKey && e.shiftKey) {  //如果同时按下Ctrl和Shift键
+			t.parentNode.removeChild(t);  //移出当前元素
+	}
+}
+
 
 
 

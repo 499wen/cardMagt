@@ -87,6 +87,7 @@ export default  {
                 bleedingSite: '0', // 出血位
                 bgimage: '', // 背景图片
                 bl: '', // 缩放比例
+                name: '', // 模板名称
             },
 
             headers: {
@@ -151,22 +152,19 @@ export default  {
 
             tData: { 
                 pageNum: 1,
-                pageSize: 5, // 999
+                pageSize: 20, // 999
                 total: 0,
                 currentPage: 1,
             }, // 表单分页
 
             mData: { 
                 pageNum: 1,
-                pageSize: 2, // 999
+                pageSize: 8, // 999
                 total: 0,
                 currentPage: 1,
             }, // 模板分页
 
-            model__: [
-                {content: '', id: '41144445', check: false},
-                {content: '', id: '99522344', check: false},
-            ],
+            model__: [],
             haveHave: false,
             modelBox: false,
 
@@ -185,10 +183,20 @@ export default  {
 
             relevantShow: false,
             relevantUser: [],
-            relevantArr: []
+            relevantArr: [],
+
+            modelName: false
         }
     },
     methods: {
+        // 双击模板列表  编辑
+        makeSmooth(idx){
+            console.log(idx)
+            this.switchTm(idx)
+
+            this.editModel()
+        },
+        // 删除人员
         delModelPerson(e){
             if(this.relevantArr.length == 0){
                 this.$message('请先勾选人员！')
@@ -261,22 +269,25 @@ export default  {
             
             console.log(selectDom)
 
-            this.eleList = JSON.parse(selectDom.attr)
+            this.eleList = selectDom.attr
 
             // 填充背景块
-            this.model = JSON.parse(selectDom.publicAttr)
+            this.model = selectDom.publicAttr
             // document.querySelector('.box').style.backgroundImage = `url(${this.model.bgimage})`
 
             // 获保存当前选中模板对象
             this.curModelData = selectDom
             this.relevantUser = []
-            selectDom.personTemplateUsers.map(item => {
-                item.user.tempUserId = item.id
-                this.relevantUser.push(item.user)
-            })
-
+            if(selectDom.personTemplateUsers != null){
+                selectDom.personTemplateUsers.map(item => {
+                    item.user.tempUserId = item.id
+                    this.relevantUser.push(item.user)
+                })
+            }
 
             this.editTc = selectDom.content
+
+            // return
             setTimeout(() => {
                 let textNodes = $("#box").find(".textTemplate");
                 console.log('textNodes',textNodes)
@@ -342,13 +353,14 @@ export default  {
                         if(res.code == '000'){
                             this.$message.success('删除成功！')
                             this.model__.splice(id, 1)
-                            this.haveHave = false
-                            this.pageNum = 1
-                            this.getModel()
-    
                             if(this.model__.length == 0){
                                 this.modelBox = false
                             }
+
+                            this.haveHave = false
+                            this.pageNum = 1
+                            this.getModel()
+                            
                         }
                     })
                 
@@ -379,11 +391,88 @@ export default  {
             }
 
         },
-        // 保存模板 去除带有属性的文本
+        // 绑定模板 - 保存人员
+        preProsons(){
+            // 判断是否设置模板模板名字
+            // if(!this.fileNameVal.trim()){
+            //     this.fileName = true
+            //     this.$message('请先设置模板名称')
+            //     return 
+            // } 
+
+            // 除去 带有属性的值
+            this.removeAttrVal()
+            
+            console.dir(this.eleList[0].dom)
+            var box = document.querySelector('#box'),
+                content = JSON.stringify(box.parentNode.innerHTML),
+                attr = JSON.stringify(this.eleList)
+
+            if(this.curModelData.id == ''){
+                // 修改一次
+                if(content.indexOf('color: rgb(102, 102, 102); display: none;') == -1){
+                    // 隐藏尺寸大小
+                    content = content.replace('text-align: center; font-size: 15px; color: rgb(102, 102, 102);', 'text-align: center; font-size: 15px; color: rgb(102, 102, 102); display: none;')
+                    // 隐藏坐标
+                    content = content.replace('class=\\"coordinate\\"', 'class=\\"coordinate\\" style=\\"display: none\\"')
+                }
+
+                var data = {
+                    attr,
+                    content,
+                    publicAttr: publicAttr,
+                    personTemplateUserName: this.fileNameVal,
+                    userIds: this.multipleSelection.map(item => item.id)
+                }
+                
+
+                // 更新模板
+                if(this.edit_mo){
+                    var item = this.model__.map(item => item.select && item),
+                    selectDom = item.filter(i => i)[0]
+                    data.id = selectDom.id
+                }
+
+                this.$http.post('/api/usercenter/personTemplate/personTemplate', data)
+                    .then(res => {
+                        console.log(res)
+                        if(res.code == '000'){
+                            this.$message.success('保存成功！')
+
+                            this.getModel()
+                            this.fileName = false
+                        }
+                    })
+            } else {
+                
+                this.$http.post(`/api/usercenter/personTemplateUser/personTemplateUsers/personTemplateIdAndUserIds/${this.curModelData.id}?personTemplateUserName=${this.fileNameVal}`, this.multipleSelection.map(item => item.id))
+                    .then(res => {
+                        console.log(res)
+                        if(res.code == '000'){
+                            this.$message.success('保存成功！')
+
+                            this.getModel()
+                            this.fileName = false
+                        }
+                    })
+            }
+
+        },
+        // 保存模板 
         preservation(){
+            // 判断是否设置模板模板名字
+            if(!this.fileNameVal.trim()){
+                this.$message('请先设置模板名称')
+                setTimeout(() => {
+                    this.modelName = true
+                }, 500)
+                return 
+            }
+
             // 去除选中样式
             $('.invite-text-box-border').css('display', 'none')
 
+            // 去除带有属性的数据
             this.removeAttrVal()
             
             console.dir(this.eleList[0].dom)
@@ -399,12 +488,13 @@ export default  {
             }
 
             console.log(content)
+            this.model.name = this.fileNameVal
             // return 
             var data = {
                     content, 
                     attr, 
                     publicAttr: JSON.stringify(this.model),
-                    personTemplateUserName: '',
+                    personTemplateUserName: this.fileNameVal,
                     userIds: []
                 }
 
@@ -423,6 +513,7 @@ export default  {
                         this.$message.success('保存成功！')
 
                         this.curModelData = res.data
+                        this.modelName = false
                         this.getModel()
                     }
                 })
@@ -570,66 +661,7 @@ export default  {
                 this.$refs.multipleTable.clearSelection();
             }
         },
-        // 绑定模板 - 保存人员
-        preProsons(){
-            // 除去 带有属性的值
-            this.removeAttrVal()
-            
-            console.dir(this.eleList[0].dom)
-            var box = document.querySelector('#box'),
-                content = JSON.stringify(box.parentNode.innerHTML),
-                attr = JSON.stringify(this.eleList)
 
-            if(this.curModelData.id == ''){
-                // 修改一次
-                if(content.indexOf('color: rgb(102, 102, 102); display: none;') == -1){
-                    // 隐藏尺寸大小
-                    content = content.replace('text-align: center; font-size: 15px; color: rgb(102, 102, 102);', 'text-align: center; font-size: 15px; color: rgb(102, 102, 102); display: none;')
-                    // 隐藏坐标
-                    content = content.replace('class=\\"coordinate\\"', 'class=\\"coordinate\\" style=\\"display: none\\"')
-                }
-
-                var data = {
-                    attr,
-                    content,
-                    publicAttr: publicAttr,
-                    personTemplateUserName: this.fileNameVal,
-                    userIds: this.multipleSelection.map(item => item.id)
-                }
-                
-
-                // 更新模板
-                if(this.edit_mo){
-                    var item = this.model__.map(item => item.select && item),
-                    selectDom = item.filter(i => i)[0]
-                    data.id = selectDom.id
-                }
-
-                this.$http.post('/api/usercenter/personTemplate/personTemplate', data)
-                    .then(res => {
-                        console.log(res)
-                        if(res.code == '000'){
-                            this.$message.success('保存成功！')
-
-                            this.getModel()
-                            this.fileName = false
-                        }
-                    })
-            } else {
-                
-                this.$http.post(`/api/usercenter/personTemplateUser/personTemplateUsers/personTemplateIdAndUserIds/${this.curModelData.id}?personTemplateUserName=${this.fileNameVal}`, this.multipleSelection.map(item => item.id))
-                    .then(res => {
-                        console.log(res)
-                        if(res.code == '000'){
-                            this.$message.success('保存成功！')
-
-                            this.getModel()
-                            this.fileName = false
-                        }
-                    })
-            }
-
-        },
         // 数据验证
         verification(){
             if(!this.eleList.length){
@@ -642,7 +674,7 @@ export default  {
                 return
             }
 
-            if(this.curModelData.id){
+            if(this.fileNameVal || this.curModelData.id){
                 this.fileNameVal = this.curModelData.personTemplateUsers[0].name
                 this.preProsons()
             } else {
@@ -680,7 +712,7 @@ export default  {
                 // 选中框dom
                 var none = document.querySelectorAll('.invite-text-box-border')
 
-                console.log(none)
+                // console.log(none)
                 // 数据填充
                 if(idx == 1){
                     this.eleList.filter( (item, index, list) => {
@@ -1064,9 +1096,20 @@ export default  {
                 console.log(res)
                 if(res.code = '000'){
                     var data = res.data
-                    data.content.filter( item => {
+                    data.content.filter( (item, idx) => {
                         item.content = JSON.parse(item.content)
                         item.select = false
+                        item.publicAttr = JSON.parse(item.publicAttr)
+                        item.attr = JSON.parse(item.attr)
+
+                        // 计算缩放比例  底板长： 450  底板宽： 270
+                        item.scalex = 450 / ((+item.publicAttr.width + +item.publicAttr.bleedingSite * 2) * 5) 
+                        item.scaley = 270 / ((+item.publicAttr.height + +item.publicAttr.bleedingSite * 2) * 5)
+
+                        // 计算缩放后偏移的像素
+                        item.left = (idx % 3) * 450 + ((item.scalex * +item.publicAttr.width * 5 * (item.scalex - 1)) / 2) + 20 * (idx % 3 + 1)
+                        item.top = Math.floor(idx / 3) * 270 + ((item.scaley * +item.publicAttr.height * 5 * (item.scaley - 1)) / 2) + 20 * (Math.floor(idx / 3) + 1)
+                        
                     })
                     this.model__ = data.content
                     _this.mData.total = data.totalElements

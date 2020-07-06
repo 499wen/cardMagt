@@ -35,6 +35,7 @@
                 <!-- 数据填充 -->
                 <div class="operation" v-show="headerTag[1].select">
                     <el-button size="mini" v-if="eleList.length" @click="relevantPerson">相关人员</el-button>
+                    <!-- preProsons -->
                     <el-button size="mini" v-if="eleList.length" @click="verification">保存人员</el-button>
                 </div>
             </div>
@@ -273,6 +274,7 @@
                 :visible.sync="imgShow"
                 width="30%"
                 center
+                :close-on-click-modal='false'
                 >
                 <!-- 图片、文本 修改的功能 -->
                 <div id="templateStyle" v-if="true">
@@ -674,11 +676,13 @@
                 :visible.sync="modelShow"
                 width="30%"
                 center
+                :close-on-click-modal='false'
                 >
 
                 <!-- 设置模板样式 -->
                 <div class="model-box">
                     <ul class="model-ul">
+                        
                         <li class="model-single">
                             <span>宽度:</span>
                             <div class="value">
@@ -699,6 +703,7 @@
                                 <el-input style="width: 80px" size="mini" @input="setBleedingSite" v-model="model.bleedingSite"></el-input>
                             </div>
                         </li>
+                        
                         <li class="model-single">
                             <span>缩放比例:</span>
                             <el-select v-model="model.bl" class="option" size="mini" style="margin-left: -5px;width:97px;">
@@ -707,6 +712,12 @@
                                     <el-option value="150%" label="150%"></el-option>
                                     <el-option value="150%" label="200%"></el-option>
                             </el-select>
+                        </li>
+                        <li class="model-single">
+                            <span>模板名称:</span>
+                            <div class="value">
+                                <el-input size="mini" v-model="fileNameVal"></el-input>
+                            </div>
                         </li>
                         <li class="model-single" style="align-items: flex-start">
                             <span>背景颜色:</span>
@@ -754,9 +765,9 @@
             <el-dialog
                 title="选择模板"
                 :visible.sync="modelBox"
-                width=""
+                width="1510px"
                 center
-                class="chioceM"
+                :close-on-click-modal='false'
                 >
                 <div class="modelBox-nav">
                     <el-button size='mini' @click="delModel">删除模板</el-button>
@@ -767,10 +778,15 @@
                     <!-- <el-checkbox-group > -->
                         <div :class="['t-m-single', item.select && ' t-m-select']" 
                             v-for="(item, idx) in model__" :key="idx" 
+                            :style="`transform: scale(${item.scalex}, ${item.scaley}); 
+                            left: ${item.left}px;
+                            top: ${(item.top)}px;
+                            `"
                             >
-                            <div @click="switchTm(idx)" style="width: 100%; height: 100%" v-html="item.content"></div>
+                            <div @click="switchTm(idx)" @dblclick="makeSmooth(idx)" style="width: 100%; height: 100%" v-html="item.content"></div>
 
                             <el-checkbox class="check-box" @change="chioce(item)" v-model="item.check"></el-checkbox>
+                            <div class="model-name"> {{ item.personTemplateUserName || item.publicAttr.name }} </div>
                         </div>
                     <!-- </el-checkbox-group> -->
                     <!-- <div class="btn-width">
@@ -801,21 +817,39 @@
             <!-- 选择模板 - end -->
 
             <!-- 提示信息 - 保存文件设置名字 -->
-            <el-dialog
-                title="提示"
-                :visible.sync="fileName"
-                width="30%"
-                center>
-                <el-input v-model="fileNameVal" placeholder="请输入保存后的名字"></el-input>
-                <span slot="footer" class="dialog-footer">
-                    <el-button type="primary" @click="preProsons">确 定</el-button>
-                    <el-button @click="fileName = false">取 消</el-button>
-                </span>
-            </el-dialog>
+
+                <!-- 数据填充 - 提示 -->
+                <el-dialog
+                    :close-on-click-modal='false'
+                    title="提示"
+                    :visible.sync="fileName"
+                    width="30%"
+                    center>
+                    <el-input v-model="fileNameVal" placeholder="请输入保存后的名字"></el-input>
+                    <span slot="footer" class="dialog-footer">
+                        <el-button type="primary" @click="preProsons">确 定</el-button>
+                        <el-button @click="fileName = false">取 消</el-button>
+                    </span>
+                </el-dialog>
+
+                <!-- 模板制作 - 提示 -->
+                <el-dialog
+                    :close-on-click-modal='false'
+                    title="提示"
+                    :visible.sync="modelName"
+                    width="30%"
+                    center>
+                    <el-input v-model="fileNameVal" placeholder="请输入保存后的名字"></el-input>
+                    <span slot="footer" class="dialog-footer">
+                        <el-button type="primary" @click="preservation">确 定</el-button>
+                        <el-button @click="modelName = false">取 消</el-button>
+                    </span>
+                </el-dialog>
 
             <!-- 相关人员 - 表格 -->
             <el-dialog
                 title="相关人员"
+                :close-on-click-modal='false'
                 :visible.sync="relevantShow"
                 width=""
                 center
@@ -835,8 +869,8 @@
                         border
                         @selection-change="relevantChange">
 
-                        <el-table-column border type="selection" width="55"> </el-table-column>
-                        <el-table-column border v-for="(item, idx) in tableCate" :key="idx" :prop="item.scription" :label="item.name" > </el-table-column>
+                        <el-table-column border type="selection" :width="30"> </el-table-column>
+                        <el-table-column border v-for="(item, idx) in tableCate" :key="idx" :width="'30'" :prop="item.scription" :label="item.name" > </el-table-column>
 
                     </el-table>
                 </div>
@@ -1042,10 +1076,7 @@ export default CardMagt;
     border-color: #054592 !important;
 }
 
-.btn_custom_cancel{
-    float: right;
-    margin-left: 10px;
-}
+
 
 .chioceM > div {
     width: 1180px !important;

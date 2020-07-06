@@ -22,7 +22,7 @@ export function addLineX(parent, top, vue){
 
   // 获取当前创建的 dom 放入vue.tNode中
   vue.tNode = document.querySelector('#line'+ num)
-  vue.tNode.id = uuid()
+  vue.tNode.id = uuid() 
   lineMap.set(vue.tNode.id, vue.tNode)
 
   // 将vue对象 赋值给 that

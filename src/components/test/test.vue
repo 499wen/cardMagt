@@ -19,7 +19,7 @@
       <!-- 模板 -->
       <div class="model">
         <slot></slot>
-      </div>
+      </div> 
     </div>
   </div>
 </template>
