@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@smallwei/avue": "^2.5.2",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "core-js": "^3.6.4",
     "element-ui": "^2.3.6",
     "file-saver": "^2.0.2",
